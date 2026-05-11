@@ -1,14 +1,5 @@
-/**
- * SportGo · Frontend JavaScript
- * Conecta con API REST Flask en localhost:5000
- * CU implementados: Login, Logout, CRUD Usuarios, Stats
- */
+const API = 'api.php';
 
-const API = 'http://localhost/Proyecto_SportGo/api.php';
-
-// ══════════════════════════════════════════════
-//  Estado global
-// ══════════════════════════════════════════════
 const STATE = {
   token:    localStorage.getItem('sg_token') || null,
   user:     JSON.parse(localStorage.getItem('sg_user') || 'null'),
@@ -17,9 +8,6 @@ const STATE = {
   filter:   'all',
 };
 
-// ══════════════════════════════════════════════
-//  Canvas fondo animado
-// ══════════════════════════════════════════════
 (function initCanvas() {
   const canvas = document.getElementById('bg-canvas');
   const ctx    = canvas.getContext('2d');
@@ -44,7 +32,6 @@ const STATE = {
 
   function draw() {
     ctx.clearRect(0, 0, W, H);
-    // Líneas entre puntos cercanos
     for (let i = 0; i < points.length; i++) {
       for (let j = i + 1; j < points.length; j++) {
         const dx = points[i].x - points[j].x;
@@ -60,7 +47,6 @@ const STATE = {
         }
       }
     }
-    // Puntos
     points.forEach(p => {
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
@@ -79,9 +65,6 @@ const STATE = {
   window.addEventListener('resize', () => { resize(); makePoints(60); });
 })();
 
-// ══════════════════════════════════════════════
-//  API helper
-// ══════════════════════════════════════════════
 async function api(path, opts = {}) {
   const headers = { 'Content-Type': 'application/json' };
   if (STATE.token) headers['Authorization'] = `Bearer ${STATE.token}`;
@@ -93,14 +76,11 @@ async function api(path, opts = {}) {
     return data;
   } catch (e) {
     if (e.message === 'Failed to fetch')
-      throw new Error('Sin conexión al servidor. ¿Está corriendo server.py?');
+      throw new Error('Sin conexión al servidor. ¿Está XAMPP/Apache corriendo?');
     throw e;
   }
 }
 
-// ══════════════════════════════════════════════
-//  Toast notifications
-// ══════════════════════════════════════════════
 const ICONS = { success: '✓', error: '✕', info: 'ℹ', warning: '⚠' };
 
 function showToast(msg, type = 'success', ms = 3800) {
@@ -111,18 +91,12 @@ function showToast(msg, type = 'success', ms = 3800) {
   setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, ms);
 }
 
-// ══════════════════════════════════════════════
-//  Pantallas
-// ══════════════════════════════════════════════
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const el = document.getElementById(id);
   el.classList.add('active');
 }
 
-// ══════════════════════════════════════════════
-//  CU-02 · LOGIN
-// ══════════════════════════════════════════════
 async function handleLogin(e) {
   e.preventDefault();
   const email = document.getElementById('l-email').value.trim();
@@ -152,9 +126,6 @@ async function handleLogin(e) {
   }
 }
 
-// ══════════════════════════════════════════════
-//  CU-03 · LOGOUT
-// ══════════════════════════════════════════════
 async function handleLogout() {
   try { await api('/logout', { method: 'POST' }); } catch (_) {}
   STATE.token = null;
@@ -166,9 +137,6 @@ async function handleLogout() {
   buildDemoCards();
 }
 
-// ══════════════════════════════════════════════
-//  Entrar al dashboard
-// ══════════════════════════════════════════════
 function enterDashboard() {
   showScreen('screen-dashboard');
   renderSidebar();
@@ -177,9 +145,6 @@ function enterDashboard() {
   loadUsuarios();
 }
 
-// ══════════════════════════════════════════════
-//  Sidebar session info
-// ══════════════════════════════════════════════
 function renderSidebar() {
   const u = STATE.user;
   if (!u) return;
@@ -207,9 +172,6 @@ function renderTopbarSession() {
   `;
 }
 
-// ══════════════════════════════════════════════
-//  Demo cards en login
-// ══════════════════════════════════════════════
 const DEMOS = [
   { email:'admin@sportgo.com', pass:'admin123', nombre:'Carlos', apellido:'Mendoza', rol:'admin'  },
   { email:'ana@sportgo.com',   pass:'ana123',   nombre:'Ana',    apellido:'García',  rol:'owner'  },
@@ -243,9 +205,6 @@ function fillLogin(email, pass) {
   showToast('Credenciales cargadas — presiona Ingresar', 'info', 2500);
 }
 
-// ══════════════════════════════════════════════
-//  CU-08 · ESTADÍSTICAS
-// ══════════════════════════════════════════════
 async function loadStats() {
   try {
     const s = await api('/usuarios/stats');
@@ -271,9 +230,6 @@ function animateCount(id, target) {
   }, 40);
 }
 
-// ══════════════════════════════════════════════
-//  CU-04 · LISTAR Y BUSCAR USUARIOS
-// ══════════════════════════════════════════════
 async function loadUsuarios() {
   const q     = (document.getElementById('search-inp')?.value || '').trim();
   const tbody = document.getElementById('t-body');
@@ -285,7 +241,6 @@ async function loadUsuarios() {
     if (STATE.filter !== 'all')
       users = users.filter(u => u.rol === STATE.filter);
 
-    // Footer info
     document.getElementById('tbl-footer').textContent =
       `${users.length} usuario${users.length !== 1 ? 's' : ''} encontrado${users.length !== 1 ? 's' : ''}`;
 
@@ -338,9 +293,6 @@ async function loadUsuarios() {
   }
 }
 
-// ══════════════════════════════════════════════
-//  Filtro por rol
-// ══════════════════════════════════════════════
 function setFilter(el, f) {
   document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
@@ -348,9 +300,6 @@ function setFilter(el, f) {
   loadUsuarios();
 }
 
-// ══════════════════════════════════════════════
-//  CU-01/CU-06 · CREAR / EDITAR USUARIO
-// ══════════════════════════════════════════════
 function openModal(type, id = null) {
   STATE.editId = id;
   const isEdit = type === 'edit';
@@ -365,11 +314,11 @@ function openModal(type, id = null) {
 
   if (isEdit && id) {
     api(`/usuarios/${id}`).then(u => {
-      document.getElementById('u-nombre').value  = u.nombre;
+      document.getElementById('u-nombre').value   = u.nombre;
       document.getElementById('u-apellido').value = u.apellido;
-      document.getElementById('u-email').value   = u.email;
-      document.getElementById('u-tel').value     = u.telefono || '';
-      document.getElementById('u-rol').value     = u.rol;
+      document.getElementById('u-email').value    = u.email;
+      document.getElementById('u-tel').value      = u.telefono || '';
+      document.getElementById('u-rol').value      = u.rol;
       setEstado(u.estado);
     }).catch(err => showToast(err.message, 'error'));
   }
@@ -430,9 +379,6 @@ async function handleSave(e) {
   }
 }
 
-// ══════════════════════════════════════════════
-//  CU-05 · VER DETALLE
-// ══════════════════════════════════════════════
 async function openView(id) {
   try {
     const u = await api(`/usuarios/${id}`);
@@ -484,9 +430,6 @@ async function openView(id) {
   }
 }
 
-// ══════════════════════════════════════════════
-//  CU-07 · ELIMINAR USUARIO
-// ══════════════════════════════════════════════
 function openDelete(id, nombre) {
   STATE.deleteId = id;
   document.getElementById('del-title').textContent = `¿Eliminar a ${nombre}?`;
@@ -510,9 +453,6 @@ async function confirmDelete() {
   }
 }
 
-// ══════════════════════════════════════════════
-//  Modales helpers
-// ══════════════════════════════════════════════
 function openOv(id)  { document.getElementById(id).classList.add('open'); }
 function closeOv(id) { document.getElementById(id).classList.remove('open'); }
 function ovClose(e, id) { if (e.target === e.currentTarget) closeOv(id); }
@@ -522,9 +462,6 @@ document.addEventListener('keydown', e => {
     ['ov-form','ov-view','ov-del'].forEach(closeOv);
 });
 
-// ══════════════════════════════════════════════
-//  Toggle password visibility
-// ══════════════════════════════════════════════
 function togglePass(inputId, btn) {
   const inp = document.getElementById(inputId);
   const show = inp.type === 'password';
@@ -534,16 +471,10 @@ function togglePass(inputId, btn) {
     : `<svg viewBox="0 0 16 16" fill="none"><ellipse cx="8" cy="8" rx="6" ry="4" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r="1.8" stroke="currentColor" stroke-width="1.2"/></svg>`;
 }
 
-// ══════════════════════════════════════════════
-//  Módulos en desarrollo
-// ══════════════════════════════════════════════
 function comingSoon() {
   showToast('Este módulo estará disponible en la siguiente fase del proyecto.', 'info');
 }
 
-// ══════════════════════════════════════════════
-//  UI Helpers
-// ══════════════════════════════════════════════
 const PALETTE = [
   ['#00E08A','rgba(0,224,138,.12)','rgba(0,224,138,.3)'],
   ['#5B9EFF','rgba(91,158,255,.12)','rgba(91,158,255,.3)'],
@@ -597,9 +528,6 @@ function esc(str) {
   return d.innerHTML;
 }
 
-// ══════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════
 async function init() {
   buildDemoCards();
 

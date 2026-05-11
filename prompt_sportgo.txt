@@ -1,0 +1,36 @@
+Para crear una landing page efectiva para **SportGo**, el prompt debe ser detallado y estructurado, siguiendo los principios de conversión y diseño que sugieren las fuentes. Una landing page exitosa debe eliminar distracciones y centrarse en un único objetivo: convertir visitantes en usuarios.
+
+Aquí tienes una propuesta de prompt optimizada, basada en las mejores prácticas de redacción y diseño deportivo moderno:
+
+### Prompt Sugerido
+
+> "Actúa como un experto en **copywriting de respuesta directa** y **diseñador web UI/UX** especializado en el sector deportivo.
+>
+> **Proyecto:** SportGo, una plataforma moderna para la reserva de canchas deportivas.
+> **Objetivo:** Generar el contenido y la estructura de una landing page de alto impacto orientada a la conversión.
+> **Tono:** Profesional, dinámico y accesible, enfocado en la agilidad del deporte.
+> **Estilo Visual:** Diseño **'Bold Brutalist'** con una paleta de colores de alto contraste (azul marino terminal, blanco luz de estadio y cian para los botones de acción). Tipografía robusta y moderna.
+>
+> **Estructura requerida:**
+> 1. **Header:** Espacio para logo a la izquierda y menú de navegación simple (Inicio, Características, Beneficios, Contacto).
+> 2. **Sección Principal (Hero):** 
+>    - Un **título impactante (H1)** que use una propuesta única de valor (USP).
+>    - Un subtítulo que explique cómo SportGo elimina el caos de las reservas manuales.
+>    - Un botón de **Llamada a la Acción (CTA)** claro como 'Reserva tu Cancha Ahora'.
+> 3. **Características del Servicio:** Lista detallada que incluya: disponibilidad en tiempo real, pagos seguros online, portal de cliente 24/7 y confirmaciones automáticas.
+> 4. **Beneficios:** Enfocados en lo que gana el usuario (ej. 'Juega más, gestiona menos', 'Sin errores de doble reserva', 'Acceso total desde tu móvil').
+> 5. **Contacto:** Un formulario sencillo y directo, junto con información de soporte técnico.
+> 6. **Footer:** Enlaces legales, redes sociales y copyright.
+>
+> Por favor, redacta los textos persuasivos para cada sección y describe brevemente los elementos visuales que deberían acompañarlos para mantener una estética deportiva moderna."
+
+---
+
+### Recomendaciones adicionales basadas en las fuentes:
+
+*   **Enfoque en Beneficios vs. Características:** Asegúrate de que la página no solo diga lo que SportGo *es* (ej. "pagos online"), sino lo que el usuario *gana* (ej. "olvídate del efectivo y asegura tu lugar al instante").
+*   **Elementos Visuales:** Para un diseño deportivo moderno, se sugiere usar imágenes de "héroe" que muestren el contexto de uso, como una cancha iluminada o un jugador usando la app en un dispositivo móvil.
+*   **Tipografía Sugerida:** Considera fuentes como **'Magistral'** por su look moderno, o **'Massilia'** para bloques de texto imponentes que recuerden a marcas líderes como Nike.
+*   **Prueba Social:** Aunque no lo solicitaste en tu estructura inicial, las fuentes indican que incluir testimonios reales o logos de clubes asociados aumenta drásticamente la confianza y la conversión.
+
+¿Te gustaría que cree algún recurso adicional, como un cuestionario para evaluar si tu landing page cumple con estos objetivos o una guía de estudio con estos conceptos clave?
