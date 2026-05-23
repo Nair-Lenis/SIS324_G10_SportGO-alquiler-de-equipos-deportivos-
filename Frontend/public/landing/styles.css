@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --color-teal: #008080;
+  --color-rust: #D2691E;
+  --color-purple: #301934;
+  --color-slate: #708090;
+  --font-heading: 'Teko', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+body {
+  font-family: var(--font-body);
+  color: #f3f4f6; /* Tailwind gray-100 */
+  background-color: #111827; /* Tailwind gray-900 */
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Custom Utilities for our Colors */
+.bg-teal { background-color: var(--color-teal); }
+.text-teal { color: var(--color-teal); }
+.bg-rust { background-color: var(--color-rust); }
+.text-rust { color: var(--color-rust); }
+.bg-purple { background-color: var(--color-purple); }
+.text-purple { color: var(--color-purple); }
+
+.border-teal { border-color: var(--color-teal); }
+.border-rust { border-color: var(--color-rust); }
+
+/* Glow Effects */
+.glow-teal:hover {
+  box-shadow: 0 0 20px rgba(0, 128, 128, 0.6);
+  transform: translateY(-5px);
+  transition: all 0.3s ease;
+}
+
+/* Navbar Transition */
+#navbar {
+  transition: background-color 0.4s ease, backdrop-filter 0.4s ease;
+}
+
+.nav-scrolled {
+  background-color: rgba(48, 25, 52, 0.95) !important; /* Deep Purple */
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Glassmorphism for Search */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Button hover */
+.btn-primary {
+  transition: background-color 0.3s, transform 0.2s;
+}
+.btn-primary:hover {
+  background-color: #B85B1A; /* darker rust */
+  transform: scale(1.05);
+}
+
+/* Image object fit utilities */
+.img-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

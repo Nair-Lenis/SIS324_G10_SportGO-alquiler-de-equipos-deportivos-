@@ -8,11 +8,25 @@ import DashboardAdmin       from './pages/dashboard/DashboardAdmin'
 import DashboardPropietario from './pages/dashboard/DashboardPropietario'
 import DashboardArrendatario from './pages/dashboard/DashboardArrendatario'
 
+// Landing Page importada como componente React (iframe)
+function LandingPageWrapper() {
+  return (
+    <iframe
+      src="/landing/index.html"
+      style={{ width: '100%', height: '100vh', border: 'none', display: 'block' }}
+      title="SportGo Landing"
+    />
+  )
+}
+
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* Landing Page en la raíz */}
+          <Route path="/" element={<LandingPageWrapper />} />
+
           {/* Públicas */}
           <Route path="/login"    element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -34,8 +48,8 @@ export default function App() {
             </PrivateRoute>
           }/>
 
-          {/* Catch-all → login */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          {/* Catch-all → landing */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

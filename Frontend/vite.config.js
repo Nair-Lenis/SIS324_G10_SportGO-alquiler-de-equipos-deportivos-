@@ -12,5 +12,7 @@ export default defineConfig({
         changeOrigin: true,
       }
     }
-  }
+  },
+  // Evitar que Vite intente procesar el HTML de la landing en public/
+  publicDir: 'public',
 })
