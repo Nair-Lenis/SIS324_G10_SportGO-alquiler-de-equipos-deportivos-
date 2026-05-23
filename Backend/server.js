@@ -1,27 +1,22 @@
 const express = require('express');
 const cors    = require('cors');
+const path    = require('path');
 require('dotenv').config();
 
 const app = express();
 
-const allowedOrigins = [
-  'http://localhost:5173',
-  process.env.FRONTEND_URL,
-].filter(Boolean);
-
-app.use(cors({
-  origin: (origin, cb) => {
-    if (!origin || allowedOrigins.includes(origin)) cb(null, true);
-    else cb(new Error('No permitido por CORS'));
-  },
-}));
+app.use(cors());
 app.use(express.json());
 
 app.use('/api/auth',    require('./routes/auth'));
 app.use('/api/users',   require('./routes/users'));
 app.use('/api/equipos', require('./routes/equipos'));
 
-app.get('/', (_req, res) => res.json({ mensaje: '🚀 SportGo API corriendo', version: '2.0' }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Servidor en http://localhost:${PORT}`));
