@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportGo | Alquila el Equipo. Vive la Aventura.</title>
+    <meta name="description" content="Mercado de alquiler de equipo deportivo entre personas, conectando a entusiastas del aire libre con propietarios locales.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/landing/styles.css">
+</head>
+<body class="antialiased overflow-x-hidden">
+
+    <!-- Navegación fija -->
+    <nav id="navbar" class="fixed w-full z-50 bg-transparent py-4 px-6 lg:px-12 flex justify-between items-center text-white">
+        <div class="flex items-center gap-2">
+            <!-- Ícono del logo (SVG) -->
+            <svg class="w-8 h-8 text-rust" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+            <span class="font-heading text-3xl font-bold tracking-wider">SportGo</span>
+        </div>
+        <div class="hidden md:flex gap-8 font-medium">
+            <a href="#how-it-works" class="hover:text-teal transition">Cómo Funciona</a>
+            <a href="#categories" class="hover:text-teal transition">Categorías</a>
+            <a href="#benefits" class="hover:text-teal transition">Beneficios</a>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="/login" class="text-white font-medium text-sm hover:text-teal transition px-4 py-2">Iniciar sesión</a>
+            <a href="/register" class="bg-rust btn-primary px-6 py-2 rounded-full font-bold uppercase tracking-wide text-sm">Publicar mi Equipo</a>
+        </div>
+    </nav>
+
+    <!-- Sección Hero -->
+    <header class="relative w-full h-screen flex items-center justify-center">
+        <!-- Imagen de fondo -->
+        <div class="absolute inset-0 z-0 bg-gray-900">
+            <img src="/landing/assets/hero_bg.png" alt="Deportes acuáticos extremos" class="img-cover object-center filter brightness-50">
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-900"></div>
+        </div>
+
+        <div class="relative z-10 container mx-auto px-4 text-center mt-20">
+            <h1 class="font-heading text-6xl md:text-8xl text-white font-bold mb-4 drop-shadow-lg">Alquila el Equipo.<br><span class="text-teal">Vive la Aventura.</span></h1>
+            <p class="text-lg md:text-xl text-gray-200 mb-10 max-w-2xl mx-auto drop-shadow-md">Conéctate con propietarios locales y accede a equipamiento de primer nivel para tu próxima excursión al aire libre.</p>
+
+            <!-- Barra de búsqueda -->
+            <div class="glass-panel p-3 rounded-2xl md:rounded-full max-w-4xl mx-auto flex flex-col md:flex-row gap-2 shadow-2xl">
+                <div class="flex-1 bg-white/10 rounded-xl md:rounded-l-full px-6 py-3 border border-white/10">
+                    <label class="block text-xs uppercase tracking-wider text-teal font-bold mb-1 text-left">¿Qué estás buscando?</label>
+                    <input type="text" placeholder="ej. Bicicleta de montaña, Kayak" class="w-full bg-transparent text-white placeholder-gray-400 focus:outline-none focus:ring-0">
+                </div>
+                <div class="hidden md:block w-px bg-white/20 my-2"></div>
+                <div class="flex-1 bg-white/10 rounded-xl px-6 py-3 border border-white/10">
+                    <label class="block text-xs uppercase tracking-wider text-teal font-bold mb-1 text-left">Ubicación</label>
+                    <input type="text" placeholder="Ciudad o Código Postal" class="w-full bg-transparent text-white placeholder-gray-400 focus:outline-none focus:ring-0">
+                </div>
+                <div class="hidden md:block w-px bg-white/20 my-2"></div>
+                <div class="flex-1 bg-white/10 rounded-xl px-6 py-3 border border-white/10">
+                    <label class="block text-xs uppercase tracking-wider text-teal font-bold mb-1 text-left">Fechas</label>
+                    <input type="date" class="w-full bg-transparent text-white placeholder-gray-400 focus:outline-none focus:ring-0 appearance-none filter invert">
+                </div>
+                <button class="bg-rust btn-primary text-white font-bold rounded-xl md:rounded-r-full md:rounded-l-none px-8 py-4 uppercase tracking-wider h-full flex items-center justify-center">
+                    Buscar Equipo
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sección Cómo Funciona -->
+    <section id="how-it-works" class="py-24 bg-gray-900">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="font-heading text-4xl md:text-5xl text-white mb-4">Cómo Funciona</h2>
+                <div class="w-24 h-1 bg-teal mx-auto"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-5xl mx-auto">
+                <!-- Paso 1 -->
+                <div class="text-center group">
+                    <div class="w-24 h-24 mx-auto bg-purple rounded-full flex items-center justify-center mb-6 border-4 border-gray-800 group-hover:border-teal transition-colors duration-300 shadow-[0_0_15px_rgba(0,128,128,0.3)]">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-heading text-2xl text-white mb-2">1. Busca</h3>
+                    <p class="text-gray-400">Encuentra el equipo perfecto cerca de tu destino o donde vives.</p>
+                </div>
+                <!-- Paso 2 -->
+                <div class="text-center group">
+                    <div class="w-24 h-24 mx-auto bg-purple rounded-full flex items-center justify-center mb-6 border-4 border-gray-800 group-hover:border-rust transition-colors duration-300 shadow-[0_0_15px_rgba(210,105,30,0.3)]">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-heading text-2xl text-white mb-2">2. Reserva</h3>
+                    <p class="text-gray-400">Reserva tus fechas de forma segura y conéctate con el propietario.</p>
+                </div>
+                <!-- Paso 3 -->
+                <div class="text-center group">
+                    <div class="w-24 h-24 mx-auto bg-purple rounded-full flex items-center justify-center mb-6 border-4 border-gray-800 group-hover:border-teal transition-colors duration-300 shadow-[0_0_15px_rgba(0,128,128,0.3)]">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-heading text-2xl text-white mb-2">3. Juega</h3>
+                    <p class="text-gray-400">Recoge tu equipo y vive tu aventura al máximo.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Categorías (Bento Grid) -->
+    <section id="categories" class="py-20 bg-gray-800">
+        <div class="container mx-auto px-4 max-w-6xl">
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <h2 class="font-heading text-4xl md:text-5xl text-white mb-2">Explora el Equipo</h2>
+                    <p class="text-gray-400 text-lg">Categorías hechas para la aventura.</p>
+                </div>
+                <a href="#" class="hidden md:inline-flex text-teal font-bold uppercase tracking-wider hover:text-white transition items-center gap-2">
+                    Ver Todas las Categorías <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </a>
+            </div>
+
+            <!-- Bento Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-4 h-auto md:h-[600px]">
+                
+                <!-- Ciclismo (Grande) -->
+                <div class="glow-teal rounded-2xl overflow-hidden relative group md:col-span-2 md:row-span-1 bg-gray-900 border border-gray-700 h-64 md:h-auto cursor-pointer flex flex-col justify-end">
+                    <div class="absolute inset-0 z-0">
+                        <img src="/landing/assets/category_cycling.png" alt="Ciclismo" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition duration-500">
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent z-0"></div>
+                    <div class="relative z-10 p-6">
+                        <span class="bg-rust text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">Popular</span>
+                        <h3 class="font-heading text-3xl text-white m-0">Ciclismo y Bicicletas</h3>
+                    </div>
+                </div>
+
+                <!-- Deportes Acuáticos -->
+                <div class="glow-teal rounded-2xl overflow-hidden relative group bg-gray-900 border border-gray-700 h-64 md:h-auto cursor-pointer flex flex-col justify-end">
+                    <div class="absolute inset-0 z-0">
+                        <img src="/landing/assets/category_water.png" alt="Deportes Acuáticos" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition duration-500">
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent z-0"></div>
+                    <div class="relative z-10 p-6">
+                        <h3 class="font-heading text-3xl text-white m-0">Deportes Acuáticos</h3>
+                    </div>
+                </div>
+
+                <!-- Deportes de Invierno -->
+                <div class="glow-teal rounded-2xl overflow-hidden relative group bg-gray-900 border border-gray-700 h-64 md:h-auto cursor-pointer flex flex-col justify-end">
+                    <div class="absolute inset-0 z-0">
+                        <img src="/landing/assets/category_winter.png" alt="Deportes de Invierno" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition duration-500">
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent z-0"></div>
+                    <div class="relative z-10 p-6">
+                        <h3 class="font-heading text-3xl text-white m-0">Deportes de Invierno</h3>
+                    </div>
+                </div>
+
+                <!-- Senderismo y Trail -->
+                <div class="glow-teal rounded-2xl overflow-hidden relative group md:col-span-2 bg-gray-900 border border-gray-700 h-64 md:h-auto cursor-pointer flex flex-col justify-end">
+                    <div class="absolute inset-0 z-0">
+                        <img src="/landing/assets/category_trail.png" alt="Senderismo y Trail" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition duration-500 object-top">
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent z-0"></div>
+                    <div class="relative z-10 p-6">
+                        <h3 class="font-heading text-3xl text-white m-0">Senderismo y Trail</h3>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Beneficios -->
+    <section id="benefits" class="py-24 bg-gray-900">
+        <div class="container mx-auto px-4 max-w-6xl">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16">
+                
+                <!-- Para Arrendatarios -->
+                <div class="bg-gray-800/50 p-10 rounded-3xl border border-teal/20 hover:border-teal/50 transition duration-300">
+                    <h2 class="font-heading text-4xl text-teal mb-6">Para Arrendatarios</h2>
+                    <ul class="space-y-6">
+                        <li class="flex gap-4">
+                            <div class="mt-1 bg-teal/20 p-2 rounded-full text-teal h-min">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xl text-white mb-1">Grandes Ahorros</h4>
+                                <p class="text-gray-400">Alquila equipamiento de alta gama a una fracción del precio de venta o de los grandes almacenes.</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-4">
+                            <div class="mt-1 bg-teal/20 p-2 rounded-full text-teal h-min">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xl text-white mb-1">Acceso Local</h4>
+                                <p class="text-gray-400">Encuentra equipo exactamente donde lo necesitas, de locales que conocen el terreno.</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-4">
+                            <div class="mt-1 bg-teal/20 p-2 rounded-full text-teal h-min">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xl text-white mb-1">Equipamiento de Alto Nivel</h4>
+                                <p class="text-gray-400">Evita los equipos básicos de alquiler y prueba modelos profesionales antes de comprar.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Para Propietarios -->
+                <div class="bg-purple/20 p-10 rounded-3xl border border-rust/20 hover:border-rust/50 transition duration-300">
+                    <h2 class="font-heading text-4xl text-rust mb-6">Para Propietarios</h2>
+                    <ul class="space-y-6">
+                        <li class="flex gap-4">
+                            <div class="mt-1 bg-rust/20 p-2 rounded-full text-rust h-min">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xl text-white mb-1">Garantía de Seguro</h4>
+                                <p class="text-gray-400">Cada alquiler está respaldado por nuestra póliza de cobertura integral de $10,000.</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-4">
+                            <div class="mt-1 bg-rust/20 p-2 rounded-full text-rust h-min">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xl text-white mb-1">Ganancias Fáciles</h4>
+                                <p class="text-gray-400">Monetiza tu equipo sin uso de forma automática. Nosotros gestionamos los pagos y la agenda.</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-4">
+                            <div class="mt-1 bg-rust/20 p-2 rounded-full text-rust h-min">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xl text-white mb-1">Comunidad Verificada</h4>
+                                <p class="text-gray-400">Alquila a usuarios verificados apasionados por el deporte, con tu equipo en buenas manos.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Confianza y Testimonios -->
+    <section class="py-20 bg-gray-800">
+        <div class="container mx-auto px-4 max-w-4xl text-center">
+            <svg class="w-12 h-12 text-teal mx-auto mb-6 opacity-50" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"></path></svg>
+            <h2 class="font-heading text-3xl md:text-5xl text-white mb-8">"¡La mejor experiencia de alquiler de kayak que he tenido! El equipo estaba prácticamente nuevo y recogerlo de un vecino hizo que llegar al río fuera muy sencillo."</h2>
+            
+            <div class="flex items-center justify-center gap-4 mb-16">
+                <img src="/landing/assets/user_portrait.png" alt="Sara Jiménez" class="w-16 h-16 rounded-full object-cover border-2 border-teal">
+                <div class="text-left">
+                    <p class="text-white font-bold text-lg">Sara Jiménez</p>
+                    <div class="flex text-rust">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Con la confianza de -->
+            <div class="border-t border-gray-700 pt-10">
+                <p class="text-sm font-bold uppercase tracking-widest text-gray-500 mb-6">Con la confianza de miembros de</p>
+                <div class="flex flex-wrap justify-center gap-12 opacity-50 grayscale hover:grayscale-0 transition duration-500">
+                    <div class="font-heading text-2xl text-white">US CYCLING</div>
+                    <div class="font-heading text-2xl text-white">PRO SURF</div>
+                    <div class="font-heading text-2xl text-white">ALPINE INT.</div>
+                    <div class="font-heading text-2xl text-white">HIKING CO.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pie de Página -->
+    <footer class="bg-gray-900 border-t border-purple/30 pt-20 pb-10">
+        <div class="container mx-auto px-4 max-w-6xl">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                <!-- Marca -->
+                <div class="md:col-span-1">
+                    <div class="flex items-center gap-2 mb-6">
+                        <svg class="w-6 h-6 text-rust" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        <span class="font-heading text-2xl font-bold tracking-wider text-white">SportGo</span>
+                    </div>
+                    <p class="text-gray-400 mb-6">Potenciando a atletas y aventureros en todas partes al compartir las herramientas del deporte.</p>
+                    <!-- Descargar App -->
+                    <button class="bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white rounded-xl px-4 py-2 flex items-center gap-3 transition">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.09 2.31-.8 3.59-.73 1.54.06 2.8.69 3.52 1.76-2.97 1.77-2.48 5.76.4 6.94-1.05 2.54-1.7 3.23-2.59 4.2zm-4.73-19.14c-.03 1.83-1.48 3.47-3.3 3.63-.3-1.85 1.4-3.56 3.12-3.69l.18.06z"></path></svg>
+                        <div class="text-left">
+                            <span class="block text-[10px] text-gray-400">Descargar en</span>
+                            <span class="block text-sm font-bold">App Store</span>
+                        </div>
+                    </button>
+                </div>
+                
+                <!-- Explorar -->
+                <div>
+                    <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-wider">Explorar</h4>
+                    <ul class="space-y-4 text-gray-400">
+                        <li><a href="#" class="hover:text-teal transition">Todas las Categorías</a></li>
+                        <li><a href="#" class="hover:text-teal transition">Ciclismo</a></li>
+                        <li><a href="#" class="hover:text-teal transition">Deportes Acuáticos</a></li>
+                        <li><a href="#" class="hover:text-teal transition">Deportes de Invierno</a></li>
+                        <li><a href="#" class="hover:text-teal transition">Camping y Senderismo</a></li>
+                    </ul>
+                </div>
+
+                <!-- Soporte -->
+                <div>
+                    <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-wider">Soporte</h4>
+                    <ul class="space-y-4 text-gray-400">
+                        <li><a href="#" class="hover:text-teal transition">Centro de Ayuda</a></li>
+                        <li><a href="#" class="hover:text-teal transition">Seguridad y Seguros</a></li>
+                        <li><a href="#" class="hover:text-teal transition">Guía para Arrendatarios</a></li>
+                        <li><a href="#" class="hover:text-teal transition">Panel del Propietario</a></li>
+                        <li><a href="#" class="hover:text-teal transition">Contáctanos</a></li>
+                    </ul>
+                </div>
+
+                <!-- Legal -->
+                <div>
+                    <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-wider">Legal</h4>
+                    <ul class="space-y-4 text-gray-400">
+                        <li><a href="#" class="hover:text-teal transition">Términos de Servicio</a></li>
+                        <li><a href="#" class="hover:text-teal transition">Política de Privacidad</a></li>
+                        <li><a href="#" class="hover:text-teal transition">Política de Cookies</a></li>
+                        <li><a href="#" class="hover:text-teal transition">Mapa del Sitio</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-center border-t border-gray-800 pt-8">
+                <p class="text-gray-500 text-sm mb-4 md:mb-0">&copy; 2026 SportGo Inc. Todos los derechos reservados.</p>
+                <!-- Iconos Sociales -->
+                <div class="flex gap-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/landing/script.js"></script>
+</body>
+</html>

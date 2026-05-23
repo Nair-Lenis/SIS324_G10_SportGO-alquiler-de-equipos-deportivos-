@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 260" width="400" height="260">
+  <defs>
+    <linearGradient id="sky2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d0d1f"/>
+      <stop offset="100%" style="stop-color:#1a1a3d"/>
+    </linearGradient>
+    <linearGradient id="slope" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#b8d4f0"/>
+      <stop offset="100%" style="stop-color:#8ab0d8"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="260" fill="url(#sky2)"/>
+  <!-- Mountain -->
+  <polygon points="200,20 380,230 20,230" fill="url(#slope)" opacity="0.85"/>
+  <polygon points="200,20 380,230 20,230" fill="#c8dff5" opacity="0.3"/>
+  <!-- Shadow side -->
+  <polygon points="200,20 290,230 20,230" fill="#6890b8" opacity="0.4"/>
+  <!-- Snow trees -->
+  <polygon points="40,190 55,150 70,190" fill="#1a3050" opacity="0.7"/>
+  <polygon points="330,185 345,145 360,185" fill="#1a3050" opacity="0.7"/>
+  <!-- Snowboarder -->
+  <!-- Board -->
+  <rect x="155" y="175" width="95" height="12" rx="6" fill="#2d1b69" transform="rotate(-12,200,181)"/>
+  <!-- Body -->
+  <ellipse cx="198" cy="158" rx="14" ry="18" fill="#ff5a1f" transform="rotate(-12,198,158)"/>
+  <!-- Head -->
+  <circle cx="205" cy="138" r="12" fill="#ffd4a0"/>
+  <!-- Helmet -->
+  <ellipse cx="205" cy="133" rx="12" ry="9" fill="#2d1b69"/>
+  <!-- Goggles -->
+  <rect x="197" y="137" width="16" height="5" rx="2.5" fill="#ff9500" opacity="0.9"/>
+  <!-- Arms out -->
+  <line x1="188" y1="155" x2="165" y2="145" stroke="#ff5a1f" stroke-width="6" stroke-linecap="round"/>
+  <line x1="208" y1="155" x2="232" y2="148" stroke="#ff5a1f" stroke-width="6" stroke-linecap="round"/>
+  <!-- Speed lines -->
+  <line x1="100" y1="165" x2="135" y2="168" stroke="white" stroke-width="1.5" opacity="0.4"/>
+  <line x1="105" y1="175" x2="140" y2="178" opacity="0.3" stroke="white" stroke-width="1"/>
+  <!-- Snowflakes -->
+  <text x="60" y="60" font-family="Arial" font-size="16" fill="white" opacity="0.3">❄</text>
+  <text x="310" y="80" font-family="Arial" font-size="12" fill="white" opacity="0.25">❄</text>
+  <text x="150" y="50" font-family="Arial" font-size="10" fill="white" opacity="0.2">❄</text>
+  <!-- Label -->
+  <text x="200" y="252" font-family="Arial, sans-serif" font-size="13" fill="#00b4a6" text-anchor="middle" font-weight="bold" opacity="0.8">INVIERNO</text>
+</svg>
