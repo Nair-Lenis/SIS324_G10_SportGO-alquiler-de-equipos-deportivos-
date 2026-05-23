@@ -1,5 +1,7 @@
 // Cliente HTTP centralizado para SportGo API
-const BASE = '/api'
+const BASE = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : '/api'
 
 function getToken() {
   return localStorage.getItem('sportgo_token')
@@ -17,7 +19,7 @@ async function request(method, path, body = null) {
       body: body ? JSON.stringify(body) : null,
     })
   } catch {
-    throw new Error('No se puede conectar con el servidor. ¿Está corriendo el backend en :3000?')
+    throw new Error('No se puede conectar con el servidor.')
   }
 
   const text = await res.text()
