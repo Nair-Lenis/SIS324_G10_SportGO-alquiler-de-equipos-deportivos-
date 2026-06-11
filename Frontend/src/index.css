@@ -46,6 +46,239 @@ input, select, textarea {
   outline: none;
 }
 
+.hero-panel {
+  display: grid;
+  gap: 1rem;
+  border-radius: 26px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.18), rgba(16, 185, 129, 0.12));
+  padding: 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+}
+
+@media (min-width: 900px) {
+  .hero-panel { grid-template-columns: minmax(340px, 1fr) 380px; align-items: center; }
+}
+
+.hero-illustration {
+  width: 100%;
+  display: block;
+  max-width: 100%;
+  border-radius: 26px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.18);
+}
+
+.dashboard-shell {
+  min-height: 100vh;
+  background: radial-gradient(circle at top left, rgba(0, 128, 128, 0.18), transparent 25%),
+              radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.08), transparent 22%),
+              var(--bg);
+}
+
+.dashboard-header {
+  background: rgba(26, 35, 51, 0.92);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-main {
+  padding: 2rem;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.dashboard-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--teal);
+  box-shadow: 0 18px 36px rgba(0, 128, 128, 0.16);
+}
+
+.dashboard-card img,
+.dashboard-card video {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.dashboard-card-body {
+  padding: 1.2rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.dashboard-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 1.25rem 1.25rem;
+}
+
+.dashboard-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(255,255,255,0.05);
+}
+
+.dashboard-button {
+  border-radius: 999px;
+  padding: 0.75rem 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dashboard-button.secondary {
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.dashboard-button.primary {
+  background: var(--teal);
+  color: #fff;
+}
+
+.dashboard-sidebar-button {
+  width: 100%;
+  border: 1px solid transparent;
+  padding: 1rem 1rem;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.dashboard-sidebar-button.active {
+  background: rgba(0, 128, 128, 0.12);
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.dashboard-sidebar-button:hover {
+  border-color: rgba(0, 128, 128, 0.15);
+}
+
+.btn-primary,
+.btn-secondary {
+  font-family: var(--font-body);
+}
+
+.panel-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(255,255,255,0.05);
+  color: var(--text2);
+}
+
+.dashboard-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.product-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--teal);
+  box-shadow: 0 18px 38px rgba(0, 128, 128, 0.15);
+}
+
+.product-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.product-card .product-body {
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.btn-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 1.25rem;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.btn-primary {
+  background: var(--teal);
+  color: #fff;
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.badge-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.dashboard-metrics {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit,minmax(140px,1fr));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg); }

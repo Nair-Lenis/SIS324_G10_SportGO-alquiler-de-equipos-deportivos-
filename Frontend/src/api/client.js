@@ -23,16 +23,25 @@ async function request(method, path, body = null) {
   }
 
   const text = await res.text()
-  const data = text ? JSON.parse(text) : {}
+  let data = {}
+  if (text) {
+    try {
+      data = JSON.parse(text)
+    } catch {
+      const trimmed = text.trim().slice(0, 30).toLowerCase()
+      const htmlError = trimmed.startsWith('<!doctype') || trimmed.startsWith('<html') || trimmed.startsWith('<!doctype html')
+      data = { error: htmlError ? `Error ${res.status}: respuesta inesperada del servidor.` : text }
+    }
+  }
 
-  if (!res.ok) throw new Error(data.error || `Error ${res.status}`)
+  if (!res.ok) throw new Error(data.error || text || `Error ${res.status}`)
   return data
 }
 
 export const authAPI = {
   login:    (email, password) => request('POST', '/auth/login', { email, password }),
-  register: (nombre, apellido, email, password, telefono) =>
-    request('POST', '/auth/register', { nombre, apellido, email, password, telefono }),
+  register: (nombre, apellido, email, password, telefono, whatsapp, departamento, ciudad, provincia) =>
+    request('POST', '/auth/register', { nombre, apellido, email, password, telefono, whatsapp, departamento, ciudad, provincia }),
 }
 
 export const usersAPI = {
@@ -51,4 +60,14 @@ export const equiposAPI = {
   editar:     (id, data)      => request('PUT',    `/equipos/${id}`, data),
   eliminar:   (id)            => request('DELETE', `/equipos/${id}`),
   validar:    (id, accion, motivo) => request('PATCH', `/equipos/${id}/validar`, { accion, motivo }),
+  reviews:    (id)            => request('GET',    `/equipos/${id}/reviews`),
+}
+
+export const solicitudesAPI = {
+  crear:     (data)          => request('POST',  '/solicitudes', data),
+  mis:       ()              => request('GET',   '/solicitudes/mis'),
+  recibidas: ()              => request('GET',   '/solicitudes/recibidas'),
+  responder: (id, data)      => request('PATCH', `/solicitudes/${id}/responder`, data),
+  devolver:  (id)            => request('PATCH', `/solicitudes/${id}/devolver`, {}),
+  calificar: (id, data)      => request('PATCH', `/solicitudes/${id}/calificar`, data),
 }

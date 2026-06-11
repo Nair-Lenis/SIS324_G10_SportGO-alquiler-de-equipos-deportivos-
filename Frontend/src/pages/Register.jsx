@@ -49,7 +49,9 @@ const s = {
 }
 
 export default function Register() {
-  const [form, setForm] = useState({ nombre: '', apellido: '', email: '', password: '', telefono: '' })
+  const [form, setForm] = useState({
+    nombre: '', apellido: '', email: '', password: '', telefono: '', whatsapp: '', departamento: 'Santa Cruz', ciudad: '', provincia: ''
+  })
   const [error, setError]     = useState('')
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
@@ -61,10 +63,17 @@ export default function Register() {
   async function handleSubmit(e) {
     e.preventDefault()
     setError(''); setSuccess('')
+    if (!form.whatsapp.trim() || !form.departamento.trim() || !form.ciudad.trim() || !form.provincia.trim()) {
+      setError('Completa todos los campos obligatorios.');
+      return
+    }
     if (form.password.length < 6) { setError('La contraseña debe tener al menos 6 caracteres.'); return }
     setLoading(true)
     try {
-      await register(form.nombre, form.apellido, form.email, form.password, form.telefono)
+      await register(
+        form.nombre, form.apellido, form.email, form.password, form.telefono,
+        form.whatsapp, form.departamento, form.ciudad, form.provincia
+      )
       setSuccess('¡Cuenta creada! Redirigiendo al login...')
       setTimeout(() => navigate('/login'), 1800)
     } catch (err) {
@@ -77,7 +86,9 @@ export default function Register() {
   return (
     <div style={s.page}>
       <div style={s.card}>
-        <div style={s.logo}>⚡ SportGo</div>
+        <Link to="/" style={{ textDecoration: 'none' }}>
+          <div style={{ ...s.logo, cursor: 'pointer' }}>⚡ SportGo</div>
+        </Link>
         <p style={s.subtitle}>Creá tu cuenta gratuita</p>
 
         {error   && <div style={s.error}>{error}</div>}
@@ -100,8 +111,34 @@ export default function Register() {
           <label style={s.label}>Contraseña</label>
           <input style={s.input} type="password" value={form.password} onChange={set('password')} placeholder="Mínimo 6 caracteres" required />
 
-          <label style={s.label}>Teléfono <span style={{ fontWeight: 400, textTransform: 'none' }}>(opcional)</span></label>
-          <input style={s.input} value={form.telefono} onChange={set('telefono')} placeholder="+591 7..." />
+          <div style={s.row}>
+            <div>
+              <label style={s.label}>Teléfono <span style={{ fontWeight: 400, textTransform: 'none' }}>(opcional)</span></label>
+              <input style={s.input} value={form.telefono} onChange={set('telefono')} placeholder="+591 7..." />
+            </div>
+            <div>
+              <label style={s.label}>WhatsApp *</label>
+              <input style={s.input} value={form.whatsapp} onChange={set('whatsapp')} placeholder="+591 7..." required />
+            </div>
+          </div>
+
+          <div style={s.row}>
+            <div>
+              <label style={s.label}>Departamento *</label>
+              <select style={s.input} value={form.departamento} onChange={set('departamento')} required>
+                {['Beni', 'Chuquisaca', 'Cochabamba', 'La Paz', 'Oruro', 'Pando', 'Potosí', 'Santa Cruz', 'Tarija'].map(dep => (
+                  <option key={dep} value={dep}>{dep}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label style={s.label}>Ciudad *</label>
+              <input style={s.input} value={form.ciudad} onChange={set('ciudad')} placeholder="Sucre" required />
+            </div>
+          </div>
+
+          <label style={s.label}>Provincia *</label>
+          <input style={s.input} value={form.provincia} onChange={set('provincia')} placeholder="Cercado" required />
 
           <button style={s.btn} type="submit" disabled={loading}>
             {loading ? 'Creando cuenta...' : 'Crear cuenta'}

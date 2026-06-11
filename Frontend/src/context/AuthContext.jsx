@@ -23,16 +23,23 @@ export function AuthProvider({ children }) {
     const data = await authAPI.login(email, password)
     localStorage.setItem('sportgo_token', data.token)
     localStorage.setItem('sportgo_user',  JSON.stringify({
+      id:     data.id,
       nombre: data.nombre,
       rol:    data.rol,
     }))
     setToken(data.token)
-    setUser({ nombre: data.nombre, rol: data.rol })
+    setUser({ id: data.id, nombre: data.nombre, rol: data.rol })
     return data // contiene redirect
   }
 
-  async function register(nombre, apellido, email, password, telefono) {
-    return await authAPI.register(nombre, apellido, email, password, telefono)
+  async function register(nombre, apellido, email, password, telefono, whatsapp, departamento, ciudad, provincia) {
+    return await authAPI.register(nombre, apellido, email, password, telefono, whatsapp, departamento, ciudad, provincia)
+  }
+
+  function updateUser(updates) {
+    const updated = { ...user, ...updates }
+    localStorage.setItem('sportgo_user', JSON.stringify(updated))
+    setUser(updated)
   }
 
   function logout() {
@@ -43,7 +50,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   )

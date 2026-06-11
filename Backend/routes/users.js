@@ -15,7 +15,7 @@ router.get('/', verificarToken, soloAdmin, (req, res) => {
 // GET /api/users/:id — ver uno
 router.get('/:id', verificarToken, (req, res) => {
   const user = db.prepare(
-    'SELECT id, nombre, apellido, email, telefono, rol, estado, created_at FROM users WHERE id = ?'
+    'SELECT id, nombre, apellido, email, telefono, whatsapp, departamento, ciudad, provincia, bio, foto_perfil, rol, estado, created_at FROM users WHERE id = ?'
   ).get(req.params.id);
   if (!user) return res.status(404).json({ error: 'Usuario no encontrado.' });
   res.json(user);
@@ -40,15 +40,18 @@ router.post('/', verificarToken, soloAdmin, (req, res) => {
 });
 
 // PUT /api/users/:id — editar (solo admin)
-router.put('/:id', verificarToken, soloAdmin, (req, res) => {
-  const { nombre, apellido, email, telefono, rol, estado, password } = req.body;
+router.put('/:id', verificarToken, (req, res) => {
+  const { nombre, apellido, email, telefono, whatsapp, departamento, ciudad, provincia, bio, foto_perfil, rol, estado, password } = req.body;
   const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.params.id);
   if (!user) return res.status(404).json({ error: 'Usuario no encontrado.' });
+
+  if (req.user.rol !== 'admin' && req.user.id !== user.id)
+    return res.status(403).json({ error: 'No tenés permiso para editar este usuario.' });
 
   const newPassword = password ? bcrypt.hashSync(password, 10) : user.password;
 
   db.prepare(`
-    UPDATE users SET nombre=?, apellido=?, email=?, password=?, telefono=?, rol=?, estado=?
+    UPDATE users SET nombre=?, apellido=?, email=?, password=?, telefono=?, whatsapp=?, departamento=?, ciudad=?, provincia=?, bio=?, foto_perfil=?, rol=?, estado=?
     WHERE id=?
   `).run(
     nombre || user.nombre,
@@ -56,8 +59,14 @@ router.put('/:id', verificarToken, soloAdmin, (req, res) => {
     email || user.email,
     newPassword,
     telefono || user.telefono,
-    rol || user.rol,
-    estado || user.estado,
+    whatsapp || user.whatsapp,
+    departamento || user.departamento,
+    ciudad || user.ciudad,
+    provincia || user.provincia,
+    bio || user.bio,
+    foto_perfil || user.foto_perfil,
+    req.user.rol === 'admin' ? (rol || user.rol) : user.rol,
+    req.user.rol === 'admin' ? (estado || user.estado) : user.estado,
     req.params.id
   );
 

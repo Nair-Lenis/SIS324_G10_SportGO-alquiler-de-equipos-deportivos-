@@ -34,16 +34,16 @@ router.post('/login', (req, res) => {
     arrendatario: '/dashboard/arrendatario',
   };
 
-  res.json({ mensaje: 'Login exitoso', token, rol: user.rol, nombre: user.nombre, redirect: redirects[user.rol] });
+  res.json({ mensaje: 'Login exitoso', token, id: user.id, rol: user.rol, nombre: user.nombre, redirect: redirects[user.rol] });
 });
 
 // POST /api/auth/register
 // 🔒 SEGURIDAD: el campo `rol` del body es ignorado — siempre se asigna 'arrendatario'
 // Solo un Admin puede promover a un usuario (vía PUT /api/users/:id)
 router.post('/register', (req, res) => {
-  const { nombre, apellido, email, password, telefono } = req.body;
+  const { nombre, apellido, email, password, telefono, whatsapp, departamento, ciudad, provincia } = req.body;
 
-  if (!nombre || !apellido || !email || !password)
+  if (!nombre || !apellido || !email || !password || !whatsapp || !departamento || !ciudad || !provincia)
     return res.status(400).json({ error: 'Campos obligatorios incompletos.' });
 
   if (password.length < 6)
@@ -53,12 +53,16 @@ router.post('/register', (req, res) => {
   if (existe)
     return res.status(409).json({ error: 'El email ya está registrado.' });
 
+  const categoriasDept = ['Beni', 'Chuquisaca', 'Cochabamba', 'La Paz', 'Oruro', 'Pando', 'Potosí', 'Santa Cruz', 'Tarija'];
+  if (!categoriasDept.includes(departamento))
+    return res.status(400).json({ error: 'Departamento inválido.' });
+
   const hash = bcrypt.hashSync(password, 10);
 
   const result = db.prepare(`
-    INSERT INTO users (nombre, apellido, email, password, telefono, rol)
-    VALUES (?, ?, ?, ?, ?, 'arrendatario')
-  `).run(nombre, apellido, email, hash, telefono || null);
+    INSERT INTO users (nombre, apellido, email, password, telefono, whatsapp, departamento, ciudad, provincia, rol)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'arrendatario')
+  `).run(nombre, apellido, email, hash, telefono || null, whatsapp.trim(), departamento, ciudad.trim(), provincia.trim());
 
   res.status(201).json({ mensaje: 'Usuario registrado exitosamente.', id: result.lastInsertRowid });
 });

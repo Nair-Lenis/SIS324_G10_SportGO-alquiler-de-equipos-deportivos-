@@ -69,8 +69,15 @@ export default function Login() {
   return (
     <div style={s.page}>
       <div style={s.card}>
-        <div style={s.logo}>⚡ SportGo</div>
-        <p style={s.subtitle}>Iniciá sesión para continuar</p>
+        <Link to="/" style={{ textDecoration: 'none' }}>
+          <div style={{ ...s.logo, cursor: 'pointer' }}>⚡ SportGo</div>
+        </Link>
+        <p style={s.subtitle}>Iniciá sesión sólo si ya tenés cuenta. Si recién llegás, primero registrate.</p>
+        <div style={{ display:'flex', justifyContent:'center', gap:'0.75rem', marginBottom:'1rem' }}>
+          <Link to="/register" style={{ background:'var(--teal)', color:'#fff', borderRadius:'999px', padding:'0.6rem 1.1rem', fontWeight:600, fontSize:'0.85rem', textDecoration:'none' }}>
+            Crear cuenta
+          </Link>
+        </div>
 
         {error && <div style={s.error}>{error}</div>}
 

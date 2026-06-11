@@ -7,7 +7,7 @@ export default function PrivateRoute({ children, roles = [] }) {
 
   if (loading) return null // esperar a que se cargue la sesión
 
-  if (!user) return <Navigate to="/login" replace />
+  if (!user) return <Navigate to="/register" replace />
 
   if (roles.length > 0 && !roles.includes(user.rol)) {
     // Redirigir al dashboard correcto si el rol no coincide

@@ -165,7 +165,7 @@ function ModalValidar({ equipo, onClose, onSaved }) {
 }
 
 export default function DashboardAdmin() {
-  const [tab, setTab]           = useState('usuarios')
+  const [activeSection, setActiveSection] = useState('dashboard')
   const [users, setUsers]       = useState([])
   const [equipos, setEquipos]   = useState([])
   const [loading, setLoading]   = useState(true)
@@ -187,12 +187,13 @@ export default function DashboardAdmin() {
     finally { setLoading(false) }
   }
 
-  useEffect(() => { cargarUsuarios() }, [])
+  useEffect(() => { cargarUsuarios(); cargarEquipos() }, [])
 
-  function handleTab(t) {
-    setTab(t); setError('')
-    if (t === 'usuarios') cargarUsuarios()
-    else cargarEquipos()
+  function handleSection(s) {
+    setActiveSection(s); setError('')
+    if (s === 'usuarios') cargarUsuarios()
+    else if (s === 'equipos') cargarEquipos()
+    else { cargarUsuarios(); cargarEquipos() }
   }
 
   async function handleEliminarUser(id, nombre) {
@@ -210,10 +211,29 @@ export default function DashboardAdmin() {
   const pendientes = equipos.filter(e => e.estado_val === 'pendiente')
 
   return (
-    <DashboardShell title="Panel de administración">
+    <DashboardShell title="Panel de administración" activeSection={activeSection} onSectionChange={handleSection}>
+
+      <div className="hero-panel">
+        <div>
+          <div style={{ color:'var(--text2)', textTransform:'uppercase', letterSpacing:'0.12em', fontSize:'0.78rem', marginBottom:'0.75rem' }}>Visión general</div>
+          <h2 style={{ fontFamily:'var(--font-head)', fontSize:'2rem', marginBottom:'0.75rem' }}>Gestión centralizada para tu plataforma</h2>
+          <p style={{ color:'var(--text2)', lineHeight:1.8, maxWidth:'620px' }}>Revisa usuarios, controla publicaciones y valida solicitudes pendientes desde un dashboard claro. Toma decisiones rápidas con métricas actualizadas.</p>
+          <div className="dashboard-metrics" style={{ marginTop:'1rem' }}>
+            <div style={{ background:'rgba(0,128,128,0.15)', borderRadius:'18px', padding:'1rem', textAlign:'center' }}>
+              <div style={{ fontSize:'0.72rem', color:'var(--text2)', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'0.5rem' }}>Pendientes</div>
+              <div style={{ fontFamily:'var(--font-head)', fontSize:'2rem', color:'var(--teal)' }}>{pendientes.length || '0'}</div>
+            </div>
+            <div style={{ background:'rgba(210,105,30,0.15)', borderRadius:'18px', padding:'1rem', textAlign:'center' }}>
+              <div style={{ fontSize:'0.72rem', color:'var(--text2)', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'0.5rem' }}>Usuarios inactivos</div>
+              <div style={{ fontFamily:'var(--font-head)', fontSize:'2rem', color:'var(--rust)' }}>{users.filter(u => u.estado === 'inactivo').length || '0'}</div>
+            </div>
+          </div>
+        </div>
+        <img src="/images/dashboard-hero.svg" alt="Visión general del administrador" className="hero-illustration" />
+      </div>
 
       {/* Stats */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))', gap:'1rem', marginBottom:'2rem' }}>
+      <div className="dashboard-metrics" style={{ marginBottom:'2rem' }}>
         {[
           { label:'Total usuarios', value: users.length },
           { label:'Propietarios',   value: users.filter(u => u.rol === 'propietario').length },
@@ -230,24 +250,11 @@ export default function DashboardAdmin() {
         ))}
       </div>
 
-      {/* Tabs */}
-      <div style={{ display:'flex', gap:'0', marginBottom:'1.5rem',
-        border:'1px solid var(--border)', borderRadius:'10px', overflow:'hidden', width:'fit-content' }}>
-        {[['usuarios','👥 Usuarios'],['equipos','🏅 Equipos']].map(([key,label]) => (
-          <button key={key} onClick={() => handleTab(key)} style={{
-            padding:'0.55rem 1.5rem', border:'none', cursor:'pointer',
-            background: tab === key ? 'var(--teal)' : 'transparent',
-            color: tab === key ? '#fff' : 'var(--text2)',
-            fontWeight: tab === key ? 600 : 400, fontSize:'0.9rem',
-          }}>{label}</button>
-        ))}
-      </div>
-
       {error   && <p style={{ color:'#f87171', marginBottom:'1rem' }}>{error}</p>}
       {loading && <p style={{ color:'var(--text2)' }}>Cargando...</p>}
 
-      {/* ── TAB USUARIOS ── */}
-      {tab === 'usuarios' && !loading && (
+      {/* ── SECCIÓN USUARIOS ── */}
+      {activeSection === 'usuarios' && !loading && (
         <>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1rem' }}>
             <h2 style={{ fontSize:'1.2rem' }}>Usuarios ({users.length})</h2>
@@ -290,8 +297,8 @@ export default function DashboardAdmin() {
         </>
       )}
 
-      {/* ── TAB EQUIPOS ── */}
-      {tab === 'equipos' && !loading && (
+      {/* ── SECCIÓN EQUIPOS ── */}
+      {activeSection === 'equipos' && !loading && (
         <>
           <h2 style={{ fontSize:'1.2rem', marginBottom:'1rem' }}>
             Equipos ({equipos.length}) —{' '}

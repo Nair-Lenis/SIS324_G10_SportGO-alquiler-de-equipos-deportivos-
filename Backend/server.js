@@ -5,18 +5,32 @@ require('dotenv').config();
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || '*',
+  credentials: true,
+}));
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 
-app.use('/api/auth',    require('./routes/auth'));
-app.use('/api/users',   require('./routes/users'));
-app.use('/api/equipos', require('./routes/equipos'));
+app.use('/api/auth',       require('./routes/auth'));
+app.use('/api/users',      require('./routes/users'));
+app.use('/api/equipos',    require('./routes/equipos'));
+app.use('/api/solicitudes', require('./routes/solicitudes'));
 
-app.use(express.static(path.join(__dirname, 'public')));
+const fs = require('fs');
+const publicDir  = path.join(__dirname, 'public');
+const indexHtml  = path.join(publicDir, 'index.html');
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+if (fs.existsSync(publicDir)) {
+  app.use(express.static(publicDir));
+  app.get('/{*splat}', (req, res) => {
+    if (fs.existsSync(indexHtml)) {
+      res.sendFile(indexHtml);
+    } else {
+      res.status(404).json({ error: 'Frontend no encontrado.' });
+    }
+  });
+}
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 1573;
 app.listen(PORT, () => console.log(`✅ Servidor en http://localhost:${PORT}`));

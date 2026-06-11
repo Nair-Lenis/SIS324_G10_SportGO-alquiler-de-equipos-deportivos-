@@ -3,6 +3,19 @@ const router  = express.Router();
 const db      = require('../database');
 const { verificarToken, soloAdmin } = require('../middleware/auth');
 
+function parseEquipo(equipo) {
+  if (!equipo) return null;
+  try {
+    return { ...equipo, fotos: equipo.fotos ? JSON.parse(equipo.fotos) : [] };
+  } catch {
+    return { ...equipo, fotos: [] };
+  }
+}
+
+function parseEquipos(equipos) {
+  return equipos.map(parseEquipo);
+}
+
 // Middleware: solo propietario o admin
 function soloPropietarioOAdmin(req, res, next) {
   if (req.user.rol !== 'propietario' && req.user.rol !== 'admin')
@@ -28,7 +41,7 @@ router.get('/', verificarToken, (req, res) => {
   if (req.user.rol === 'admin') {
     // Admin ve todos
     equipos = db.prepare(`
-      SELECT e.*, u.nombre || ' ' || u.apellido AS propietario_nombre
+      SELECT e.*, u.nombre || ' ' || u.apellido AS propietario_nombre, u.telefono AS propietario_telefono, u.whatsapp AS propietario_whatsapp
       FROM equipos e
       JOIN users u ON u.id = e.propietario_id
       ORDER BY e.created_at DESC
@@ -36,7 +49,7 @@ router.get('/', verificarToken, (req, res) => {
   } else if (req.user.rol === 'propietario') {
     // Propietario ve los suyos
     equipos = db.prepare(`
-      SELECT e.*, u.nombre || ' ' || u.apellido AS propietario_nombre
+      SELECT e.*, u.nombre || ' ' || u.apellido AS propietario_nombre, u.telefono AS propietario_telefono, u.whatsapp AS propietario_whatsapp
       FROM equipos e
       JOIN users u ON u.id = e.propietario_id
       WHERE e.propietario_id = ?
@@ -45,14 +58,14 @@ router.get('/', verificarToken, (req, res) => {
   } else {
     // Arrendatario solo ve aprobados
     equipos = db.prepare(`
-      SELECT e.*, u.nombre || ' ' || u.apellido AS propietario_nombre
+      SELECT e.*, u.nombre || ' ' || u.apellido AS propietario_nombre, u.telefono AS propietario_telefono, u.whatsapp AS propietario_whatsapp
       FROM equipos e
       JOIN users u ON u.id = e.propietario_id
       WHERE e.estado_val = 'aprobado'
       ORDER BY e.created_at DESC
     `).all();
   }
-  res.json(equipos);
+  res.json(parseEquipos(equipos));
 });
 
 // GET /api/equipos/pendientes — solo admin, equipos a revisar (HU-03)
@@ -64,18 +77,18 @@ router.get('/pendientes', verificarToken, soloAdmin, (req, res) => {
     WHERE e.estado_val = 'pendiente'
     ORDER BY e.created_at ASC
   `).all();
-  res.json(equipos);
+  res.json(parseEquipos(equipos));
 });
 
 // GET /api/equipos/:id — ver uno
 router.get('/:id', verificarToken, (req, res) => {
   const equipo = db.prepare(`
-    SELECT e.*, u.nombre || ' ' || u.apellido AS propietario_nombre
+    SELECT e.*, u.nombre || ' ' || u.apellido AS propietario_nombre, u.telefono AS propietario_telefono, u.whatsapp AS propietario_whatsapp
     FROM equipos e JOIN users u ON u.id = e.propietario_id
     WHERE e.id = ?
   `).get(req.params.id);
   if (!equipo) return res.status(404).json({ error: 'Equipo no encontrado.' });
-  res.json(equipo);
+  res.json(parseEquipo(equipo));
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -83,10 +96,13 @@ router.get('/:id', verificarToken, (req, res) => {
 // Estado inicial siempre = 'pendiente'
 // ─────────────────────────────────────────────────────────────────────────────
 router.post('/', verificarToken, soloPropietarioOAdmin, (req, res) => {
-  const { titulo, descripcion, categoria, precio_dia, ubicacion } = req.body;
+  const { titulo, descripcion, categoria, precio_dia, ubicacion, fotos, lat, lng } = req.body;
 
   if (!titulo || !descripcion || !categoria || !precio_dia)
     return res.status(400).json({ error: 'Campos obligatorios: titulo, descripcion, categoria, precio_dia.' });
+
+  if (!Array.isArray(fotos) || fotos.length === 0)
+    return res.status(400).json({ error: 'Debe subir al menos una foto del equipo.' });
 
   const categoriasValidas = ['Ciclismo','Acuático','Invierno','Trail/Senderismo','Otro'];
   if (!categoriasValidas.includes(categoria))
@@ -95,12 +111,16 @@ router.post('/', verificarToken, soloPropietarioOAdmin, (req, res) => {
   if (isNaN(precio_dia) || Number(precio_dia) <= 0)
     return res.status(400).json({ error: 'El precio debe ser un número positivo.' });
 
+  if ((lat !== undefined && lat !== null && isNaN(lat)) || (lng !== undefined && lng !== null && isNaN(lng)))
+    return res.status(400).json({ error: 'Coordenadas inválidas.' });
+
   const propietario_id = req.user.rol === 'admin' ? (req.body.propietario_id || req.user.id) : req.user.id;
+  const fotosJson = JSON.stringify(fotos);
 
   const result = db.prepare(`
-    INSERT INTO equipos (propietario_id, titulo, descripcion, categoria, precio_dia, ubicacion, estado_val)
-    VALUES (?, ?, ?, ?, ?, ?, 'pendiente')
-  `).run(propietario_id, titulo.trim(), descripcion.trim(), categoria, Number(precio_dia), ubicacion?.trim() || null);
+    INSERT INTO equipos (propietario_id, titulo, descripcion, categoria, precio_dia, ubicacion, lat, lng, fotos, estado_val)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pendiente')
+  `).run(propietario_id, titulo.trim(), descripcion.trim(), categoria, Number(precio_dia), ubicacion?.trim() || null, lat !== undefined ? Number(lat) : null, lng !== undefined ? Number(lng) : null, fotosJson);
 
   res.status(201).json({ mensaje: 'Equipo registrado. Estado: pendiente de aprobación.', id: result.lastInsertRowid });
 });
@@ -110,7 +130,7 @@ router.post('/', verificarToken, soloPropietarioOAdmin, (req, res) => {
 // Ediciones de título/descripción/precio/categoría → vuelve a 'pendiente'
 // ─────────────────────────────────────────────────────────────────────────────
 router.put('/:id', verificarToken, esdueno, (req, res) => {
-  const { titulo, descripcion, categoria, precio_dia, ubicacion } = req.body;
+  const { titulo, descripcion, categoria, precio_dia, ubicacion, fotos, lat, lng } = req.body;
   const eq = req.equipo;
 
   const CAMPOS_CRITICOS = ['titulo', 'descripcion', 'categoria', 'precio_dia'];
@@ -128,9 +148,14 @@ router.put('/:id', verificarToken, esdueno, (req, res) => {
   if (precio_dia !== undefined && (isNaN(precio_dia) || Number(precio_dia) <= 0))
     return res.status(400).json({ error: 'El precio debe ser un número positivo.' });
 
+  if ((lat !== undefined && lat !== null && isNaN(lat)) || (lng !== undefined && lng !== null && isNaN(lng)))
+    return res.status(400).json({ error: 'Coordenadas inválidas.' });
+
+  const fotosJson = Array.isArray(fotos) ? JSON.stringify(fotos) : eq.fotos;
+
   db.prepare(`
     UPDATE equipos
-    SET titulo=?, descripcion=?, categoria=?, precio_dia=?, ubicacion=?,
+    SET titulo=?, descripcion=?, categoria=?, precio_dia=?, ubicacion=?, lat=?, lng=?, fotos=?,
         estado_val=?, motivo_rechazo=?, updated_at=CURRENT_TIMESTAMP
     WHERE id=?
   `).run(
@@ -139,8 +164,11 @@ router.put('/:id', verificarToken, esdueno, (req, res) => {
     categoria   ?? eq.categoria,
     precio_dia !== undefined ? Number(precio_dia) : eq.precio_dia,
     ubicacion   ?? eq.ubicacion,
+    lat !== undefined ? Number(lat) : eq.lat,
+    lng !== undefined ? Number(lng) : eq.lng,
+    fotosJson,
     nuevoEstado,
-    cambiaCritico ? null : eq.motivo_rechazo,  // limpia rechazo si vuelve a pendiente
+    cambiaCritico ? null : eq.motivo_rechazo,
     eq.id
   );
 
@@ -158,6 +186,27 @@ router.put('/:id', verificarToken, esdueno, (req, res) => {
 router.delete('/:id', verificarToken, esdueno, (req, res) => {
   db.prepare('DELETE FROM equipos WHERE id = ?').run(req.equipo.id);
   res.json({ mensaje: 'Equipo eliminado correctamente.' });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /api/equipos/:id/reviews — reseñas del equipo
+// ─────────────────────────────────────────────────────────────────────────────
+router.get('/:id/reviews', verificarToken, (req, res) => {
+  const equipo = db.prepare('SELECT id FROM equipos WHERE id = ?').get(req.params.id);
+  if (!equipo) return res.status(404).json({ error: 'Equipo no encontrado.' });
+
+  const reviews = db.prepare(`
+    SELECT s.calificacion AS rating,
+           COALESCE(u.nombre || ' ' || u.apellido, 'Usuario') AS name,
+           COALESCE(s.comentario_cal, '') AS comment,
+           s.created_at
+    FROM solicitudes s
+    JOIN users u ON u.id = s.arrendatario_id
+    WHERE s.equipo_id = ? AND s.calificacion IS NOT NULL
+    ORDER BY s.updated_at DESC
+  `).all(req.params.id);
+
+  res.json({ mensaje: 'Reseñas obtenidas.', reviews });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
