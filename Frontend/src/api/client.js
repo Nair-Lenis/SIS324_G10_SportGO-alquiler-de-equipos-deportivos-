@@ -45,11 +45,12 @@ export const authAPI = {
 }
 
 export const usersAPI = {
-  listar:   ()         => request('GET',    '/users'),
-  ver:      (id)       => request('GET',    `/users/${id}`),
-  crear:    (data)     => request('POST',   '/users', data),
-  editar:   (id, data) => request('PUT',    `/users/${id}`, data),
-  eliminar: (id)       => request('DELETE', `/users/${id}`),
+  listar:      ()           => request('GET',    '/users'),
+  ver:         (id)         => request('GET',    `/users/${id}`),
+  crear:       (data)       => request('POST',   '/users', data),
+  editar:      (id, data)   => request('PUT',    `/users/${id}`, data),
+  eliminar:    (id)         => request('DELETE', `/users/${id}`),
+  cambiarPlan: (id, plan)   => request('POST',   '/setplan',     { userId: id, plan }),
 }
 
 export const equiposAPI = {
@@ -61,6 +62,13 @@ export const equiposAPI = {
   eliminar:   (id)            => request('DELETE', `/equipos/${id}`),
   validar:    (id, accion, motivo) => request('PATCH', `/equipos/${id}/validar`, { accion, motivo }),
   reviews:    (id)            => request('GET',    `/equipos/${id}/reviews`),
+  ocupado:    (id)            => request('GET',    `/equipos/${id}/ocupado`),
+}
+
+export const mensajesAPI = {
+  listar:    (solicitudId) => request('GET',  `/mensajes/${solicitudId}`),
+  enviar:    (data)        => request('POST', '/mensajes', data),
+  novistos:  (userId)      => request('GET',  `/mensajes/novistos/${userId}`),
 }
 
 export const solicitudesAPI = {

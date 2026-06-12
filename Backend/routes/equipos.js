@@ -37,31 +37,44 @@ function esdueno(req, res, next) {
 // GET /api/equipos — listar equipos aprobados (público con token, para arrendatarios)
 // ─────────────────────────────────────────────────────────────────────────────
 router.get('/', verificarToken, (req, res) => {
+  const ratingCols = `
+    ROUND(AVG(CASE WHEN s.calificacion IS NOT NULL THEN s.calificacion END), 1) AS avg_rating,
+    COUNT(CASE WHEN s.calificacion IS NOT NULL THEN 1 END) AS review_count
+  `;
   let equipos;
   if (req.user.rol === 'admin') {
-    // Admin ve todos
     equipos = db.prepare(`
-      SELECT e.*, u.nombre || ' ' || u.apellido AS propietario_nombre, u.telefono AS propietario_telefono, u.whatsapp AS propietario_whatsapp
+      SELECT e.*, u.nombre || ' ' || u.apellido AS propietario_nombre,
+             u.telefono AS propietario_telefono, u.whatsapp AS propietario_whatsapp,
+             ${ratingCols}
       FROM equipos e
       JOIN users u ON u.id = e.propietario_id
+      LEFT JOIN solicitudes s ON s.equipo_id = e.id
+      GROUP BY e.id
       ORDER BY e.created_at DESC
     `).all();
   } else if (req.user.rol === 'propietario') {
-    // Propietario ve los suyos
     equipos = db.prepare(`
-      SELECT e.*, u.nombre || ' ' || u.apellido AS propietario_nombre, u.telefono AS propietario_telefono, u.whatsapp AS propietario_whatsapp
+      SELECT e.*, u.nombre || ' ' || u.apellido AS propietario_nombre,
+             u.telefono AS propietario_telefono, u.whatsapp AS propietario_whatsapp,
+             ${ratingCols}
       FROM equipos e
       JOIN users u ON u.id = e.propietario_id
+      LEFT JOIN solicitudes s ON s.equipo_id = e.id
       WHERE e.propietario_id = ?
+      GROUP BY e.id
       ORDER BY e.created_at DESC
     `).all(req.user.id);
   } else {
-    // Arrendatario solo ve aprobados
     equipos = db.prepare(`
-      SELECT e.*, u.nombre || ' ' || u.apellido AS propietario_nombre, u.telefono AS propietario_telefono, u.whatsapp AS propietario_whatsapp
+      SELECT e.*, u.nombre || ' ' || u.apellido AS propietario_nombre,
+             u.telefono AS propietario_telefono, u.whatsapp AS propietario_whatsapp,
+             ${ratingCols}
       FROM equipos e
       JOIN users u ON u.id = e.propietario_id
+      LEFT JOIN solicitudes s ON s.equipo_id = e.id
       WHERE e.estado_val = 'aprobado'
+      GROUP BY e.id
       ORDER BY e.created_at DESC
     `).all();
   }
@@ -115,6 +128,20 @@ router.post('/', verificarToken, soloPropietarioOAdmin, (req, res) => {
     return res.status(400).json({ error: 'Coordenadas inválidas.' });
 
   const propietario_id = req.user.rol === 'admin' ? (req.body.propietario_id || req.user.id) : req.user.id;
+
+  if (req.user.rol !== 'admin') {
+    const propietario = db.prepare('SELECT plan FROM users WHERE id = ?').get(propietario_id);
+    if (propietario?.plan !== 'premium') {
+      const { total } = db.prepare('SELECT COUNT(*) AS total FROM equipos WHERE propietario_id = ?').get(propietario_id);
+      if (total >= 3) {
+        return res.status(403).json({
+          error: 'Plan gratuito: máximo 3 equipos. Contacta al administrador para activar el plan Premium.',
+          limite_alcanzado: true,
+        });
+      }
+    }
+  }
+
   const fotosJson = JSON.stringify(fotos);
 
   const result = db.prepare(`
@@ -191,22 +218,35 @@ router.delete('/:id', verificarToken, esdueno, (req, res) => {
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /api/equipos/:id/reviews — reseñas del equipo
 // ─────────────────────────────────────────────────────────────────────────────
-router.get('/:id/reviews', verificarToken, (req, res) => {
+router.get('/:id/reviews', (req, res) => {
   const equipo = db.prepare('SELECT id FROM equipos WHERE id = ?').get(req.params.id);
   if (!equipo) return res.status(404).json({ error: 'Equipo no encontrado.' });
 
   const reviews = db.prepare(`
     SELECT s.calificacion AS rating,
-           COALESCE(u.nombre || ' ' || u.apellido, 'Usuario') AS name,
+           u.nombre || ' ' || u.apellido AS name,
            COALESCE(s.comentario_cal, '') AS comment,
-           s.created_at
+           s.updated_at AS fecha
     FROM solicitudes s
     JOIN users u ON u.id = s.arrendatario_id
-    WHERE s.equipo_id = ? AND s.calificacion IS NOT NULL
+    WHERE s.equipo_id = ? AND s.calificacion IS NOT NULL AND s.estado = 'devuelta'
     ORDER BY s.updated_at DESC
   `).all(req.params.id);
 
-  res.json({ mensaje: 'Reseñas obtenidas.', reviews });
+  const avg = reviews.length
+    ? Math.round((reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length) * 10) / 10
+    : null;
+
+  res.json({ reviews, avg_rating: avg, total: reviews.length });
+});
+
+// GET /api/equipos/:id/ocupado — fechas ocupadas (solicitudes aceptadas)
+router.get('/:id/ocupado', verificarToken, (req, res) => {
+  const rangos = db.prepare(`
+    SELECT fecha_inicio, fecha_fin FROM solicitudes
+    WHERE equipo_id = ? AND estado IN ('aceptada')
+  `).all(req.params.id);
+  res.json(rangos);
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

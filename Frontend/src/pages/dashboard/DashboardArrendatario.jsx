@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import DashboardShell from '../../components/DashboardShell'
+import ChatModal from '../../components/ChatModal'
 import { useAuth } from '../../context/AuthContext'
-import { equiposAPI, solicitudesAPI } from '../../api/client'
+import { equiposAPI, solicitudesAPI, mensajesAPI } from '../../api/client'
 
 const CATEGORIAS = ['Todas', 'Ciclismo', 'Acuático', 'Invierno', 'Trail/Senderismo', 'Otro']
 const CAT_EMOJI  = { Ciclismo:'🚵', 'Acuático':'🚣', Invierno:'🏂', 'Trail/Senderismo':'🥾', Otro:'🏅' }
@@ -91,7 +92,6 @@ function normalizePhone(phone = '') {
 }
 
 function EquipoDetalleModal({ equipo, onClose, onRequestSuccess }) {
-  const { reviews, average, total, positivePercentage } = buildReviewData(equipo)
   const slides = equipo.fotos?.length ? equipo.fotos : [CAT_IMAGE[equipo.categoria] || '/images/otro.svg']
   const [index, setIndex] = useState(0)
   const [fechaInicio, setFechaInicio] = useState('')
@@ -99,6 +99,71 @@ function EquipoDetalleModal({ equipo, onClose, onRequestSuccess }) {
   const [mensaje, setMensaje] = useState('')
   const [requestError, setRequestError] = useState('')
   const [requestLoading, setRequestLoading] = useState(false)
+  const [rangosOcupados, setRangosOcupados] = useState([])
+  const [calMes, setCalMes] = useState(() => { const d = new Date(); return { year: d.getFullYear(), month: d.getMonth() } })
+  const [reviewsData, setReviewsData] = useState({ reviews: [], avg_rating: null, total: 0 })
+  const [showReviews, setShowReviews] = useState(false)
+
+  useEffect(() => {
+    equiposAPI.ocupado(equipo.id).then(r => setRangosOcupados(Array.isArray(r) ? r : [])).catch(() => {})
+    equiposAPI.reviews(equipo.id)
+      .then(r => setReviewsData({ reviews: r.reviews || [], avg_rating: r.avg_rating, total: r.total || 0 }))
+      .catch(() => {})
+  }, [equipo.id])
+
+  function esDiaOcupado(year, month, day) {
+    const d = new Date(year, month, day)
+    return rangosOcupados.some(r => {
+      const ini = new Date(r.fecha_inicio); ini.setHours(0,0,0,0)
+      const fin = new Date(r.fecha_fin);   fin.setHours(23,59,59,999)
+      return d >= ini && d <= fin
+    })
+  }
+
+  function renderCalendario() {
+    const { year, month } = calMes
+    const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+    const primerDia = new Date(year, month, 1).getDay()
+    const diasEnMes = new Date(year, month + 1, 0).getDate()
+    const hoy = new Date(); hoy.setHours(0,0,0,0)
+    const celdas = []
+    for (let i = 0; i < primerDia; i++) celdas.push(null)
+    for (let d = 1; d <= diasEnMes; d++) celdas.push(d)
+    return (
+      <div style={{ background:'var(--bg)', border:'1px solid var(--border)', borderRadius:'12px', padding:'0.75rem', marginTop:'0.5rem' }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.5rem' }}>
+          <button onClick={() => setCalMes(m => { const d = new Date(m.year, m.month - 1); return { year:d.getFullYear(), month:d.getMonth() } })}
+            style={{ background:'transparent', border:'none', color:'var(--text2)', cursor:'pointer', fontSize:'1.1rem' }}>‹</button>
+          <span style={{ fontWeight:700, fontSize:'0.9rem' }}>{MESES[month]} {year}</span>
+          <button onClick={() => setCalMes(m => { const d = new Date(m.year, m.month + 1); return { year:d.getFullYear(), month:d.getMonth() } })}
+            style={{ background:'transparent', border:'none', color:'var(--text2)', cursor:'pointer', fontSize:'1.1rem' }}>›</button>
+        </div>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:'2px', textAlign:'center' }}>
+          {['Do','Lu','Ma','Mi','Ju','Vi','Sá'].map(d => (
+            <div key={d} style={{ fontSize:'0.65rem', color:'var(--text2)', paddingBottom:'4px', fontWeight:600 }}>{d}</div>
+          ))}
+          {celdas.map((d, i) => {
+            if (!d) return <div key={`e${i}`} />
+            const ocupado = esDiaOcupado(year, month, d)
+            const pasado = new Date(year, month, d) < hoy
+            return (
+              <div key={d} style={{
+                fontSize:'0.75rem', padding:'4px 2px', borderRadius:'6px',
+                background: ocupado ? 'rgba(239,68,68,0.2)' : 'transparent',
+                color: ocupado ? '#f87171' : pasado ? 'var(--text2)' : 'var(--text)',
+                fontWeight: ocupado ? 700 : 400,
+                textDecoration: pasado ? 'line-through' : 'none',
+              }}>{d}</div>
+            )
+          })}
+        </div>
+        <div style={{ display:'flex', gap:'1rem', marginTop:'0.5rem', fontSize:'0.72rem', color:'var(--text2)' }}>
+          <span><span style={{ color:'#f87171' }}>■</span> Ocupado</span>
+          <span><span style={{ color:'var(--teal)' }}>■</span> Disponible</span>
+        </div>
+      </div>
+    )
+  }
   const phoneDigits = normalizePhone(equipo.propietario_telefono || '')
   const inputStyle = {
     width: '100%',
@@ -197,18 +262,60 @@ function EquipoDetalleModal({ equipo, onClose, onRequestSuccess }) {
             </div>
 
             <div style={{ display:'grid', gap:'0.75rem' }}>
+              {/* ── Calificación + Reseñas ── */}
               <div style={{ background:'var(--bg)', border:'1px solid var(--border)', borderRadius:'20px', padding:'1rem' }}>
-                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.75rem' }}>
+                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                   <div>
-                    <div style={{ fontSize:'0.9rem', color:'var(--text2)' }}>Calificación</div>
-                    <div style={{ fontFamily:'var(--font-head)', fontSize:'1.7rem' }}>{average}</div>
+                    <div style={{ fontSize:'0.8rem', color:'var(--text2)', marginBottom:'0.15rem' }}>Calificación promedio</div>
+                    <div style={{ fontFamily:'var(--font-head)', fontSize:'2rem', color: reviewsData.avg_rating ? '#facc15' : 'var(--text2)' }}>
+                      {reviewsData.avg_rating ?? '—'}
+                    </div>
                   </div>
                   <div style={{ textAlign:'right' }}>
-                    <div style={{ fontSize:'0.95rem', letterSpacing:'0.05em', textTransform:'uppercase', color:'var(--text2)' }}>{total} reseñas</div>
-                    <div style={{ fontSize:'0.95rem', color:'var(--text2)' }}>{positivePercentage}% clientes satisfechos</div>
+                    <div style={{ color:'#facc15', fontSize:'1.2rem', letterSpacing:'2px' }}>
+                      {reviewsData.avg_rating
+                        ? '★'.repeat(Math.round(reviewsData.avg_rating)) + '☆'.repeat(5 - Math.round(reviewsData.avg_rating))
+                        : '☆☆☆☆☆'}
+                    </div>
+                    <div style={{ fontSize:'0.78rem', color:'var(--text2)', marginTop:'0.2rem' }}>
+                      {reviewsData.total} reseña{reviewsData.total !== 1 ? 's' : ''}
+                    </div>
                   </div>
                 </div>
-                <div style={{ fontSize:'1.05rem', letterSpacing:'0.04em', color:'var(--teal)' }}>{renderStars(average)}</div>
+                <button
+                  onClick={() => setShowReviews(v => !v)}
+                  style={{ width:'100%', marginTop:'0.75rem', padding:'0.55rem 0.75rem', borderRadius:'10px',
+                    border:'1px solid var(--border)', background: showReviews ? 'rgba(45,212,191,0.1)' : 'transparent',
+                    color: showReviews ? 'var(--teal)' : 'var(--text2)', cursor:'pointer', fontSize:'0.85rem', fontWeight:600 }}>
+                  {showReviews ? '▲ Ocultar reseñas' : `▼ Ver reseñas (${reviewsData.total})`}
+                </button>
+                {showReviews && (
+                  <div style={{ marginTop:'0.85rem', display:'grid', gap:'0.65rem' }}>
+                    {reviewsData.reviews.length === 0 ? (
+                      <div style={{ color:'var(--text2)', fontSize:'0.875rem', textAlign:'center', padding:'0.75rem 0' }}>
+                        Aún no hay reseñas. ¡Sé el primero en calificar!
+                      </div>
+                    ) : reviewsData.reviews.map((r, i) => (
+                      <div key={i} style={{ background:'rgba(45,212,191,0.06)', border:'1px solid rgba(45,212,191,0.15)',
+                        borderRadius:'14px', padding:'0.875rem' }}>
+                        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'0.35rem' }}>
+                          <div>
+                            <div style={{ fontWeight:700, fontSize:'0.875rem' }}>{r.name}</div>
+                            {r.fecha && <div style={{ fontSize:'0.7rem', color:'var(--text2)' }}>{new Date(r.fecha).toLocaleDateString()}</div>}
+                          </div>
+                          <span style={{ color:'#facc15', fontSize:'0.95rem', letterSpacing:'1px' }}>
+                            {'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}
+                          </span>
+                        </div>
+                        {r.comment && (
+                          <p style={{ margin:0, color:'var(--text2)', fontSize:'0.85rem', lineHeight:1.6, fontStyle:'italic' }}>
+                            "{r.comment}"
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {embedMapUrl ? (
@@ -223,36 +330,19 @@ function EquipoDetalleModal({ equipo, onClose, onRequestSuccess }) {
                 </div>
               ) : (
                 <div style={{ background:'var(--bg)', border:'1px solid var(--border)', borderRadius:'20px', padding:'1rem', color:'var(--text2)' }}>
-                  La ubicación exacta no está disponible. Asegúrate de que el propietario haya seleccionado la dirección en el formulario.
+                  La ubicación exacta no está disponible.
                 </div>
               )}
-
-              <div style={{ background:'var(--bg)', border:'1px solid var(--border)', borderRadius:'20px', padding:'1rem' }}>
-                <div style={{ fontSize:'0.95rem', fontWeight:700, marginBottom:'0.85rem' }}>Reseñas de clientes</div>
-                {total > 0 ? (
-                  <div style={{ display:'grid', gap:'0.85rem' }}>
-                    {reviews.map((review, idx) => (
-                      <div key={idx} style={{ background:'rgba(56,189,248,0.05)', borderRadius:'16px', padding:'0.9rem' }}>
-                        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.35rem' }}>
-                          <strong>{review.name}</strong>
-                          <span style={{ color:'var(--teal)', fontFamily:'var(--font-head)' }}>{renderStars(review.rating)}</span>
-                        </div>
-                        <p style={{ margin:0, color:'var(--text2)', fontSize:'0.9rem', lineHeight:1.6 }}>{review.comment}</p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div style={{ color:'var(--text2)', fontSize:'0.9rem', lineHeight:1.6 }}>
-                    Aún no hay reseñas del equipo. Las calificaciones y comentarios se irán registrando cuando los usuarios realicen su primer alquiler.
-                  </div>
-                )}
-              </div>
             </div>
           </div>
 
           <div style={{ background:'var(--bg2)', border:'1px solid var(--border)', borderRadius:'20px', padding:'1rem', marginTop:'1rem' }}>
             <div style={{ display:'grid', gap:'0.85rem' }}>
               <div style={{ fontSize:'1rem', fontWeight:700 }}>Enviar solicitud de alquiler</div>
+              <div>
+                <div style={{ fontSize:'0.85rem', color:'var(--text2)', marginBottom:'0.25rem' }}>Disponibilidad del equipo</div>
+                {renderCalendario()}
+              </div>
               {requestError && <div style={{ color:'#b91c1c', fontSize:'0.9rem' }}>{requestError}</div>}
               <div style={{ display:'grid', gap:'0.75rem', gridTemplateColumns:'1fr 1fr' }}>
                 <label style={{ display:'grid', gap:'0.35rem', fontSize:'0.85rem', color:'var(--text2)' }}>
@@ -322,6 +412,7 @@ export default function DashboardArrendatario() {
   const [calificaciones, setCalificaciones] = useState({})
   const [calError, setCalError]   = useState({})
   const [calLoading, setCalLoading] = useState({})
+  const [chatSolicitud, setChatSolicitud] = useState(null)
 
   function cargarEquipos() {
     setLoading(true)
@@ -334,7 +425,7 @@ export default function DashboardArrendatario() {
 
   useEffect(() => {
     if (activeSection === 'explorar') cargarEquipos()
-    if (activeSection === 'mis_solicitudes') cargarMisSolicitudes()
+    if (activeSection === 'mis_solicitudes' || activeSection === 'historial') cargarMisSolicitudes()
   }, [activeSection])
 
   async function cargarMisSolicitudes() {
@@ -543,6 +634,21 @@ export default function DashboardArrendatario() {
                     <span>👤 {eq.propietario_nombre}</span>
                   </div>
 
+                  {/* ── Estrellas en la card ── */}
+                  <div style={{ display:'flex', alignItems:'center', gap:'0.35rem', fontSize:'0.8rem' }}>
+                    {eq.avg_rating ? (
+                      <>
+                        <span style={{ color:'#facc15', letterSpacing:'1px' }}>
+                          {'★'.repeat(Math.round(eq.avg_rating))}{'☆'.repeat(5 - Math.round(eq.avg_rating))}
+                        </span>
+                        <span style={{ color:'var(--teal)', fontWeight:700 }}>{eq.avg_rating}</span>
+                        <span style={{ color:'var(--text2)' }}>({eq.review_count} reseña{eq.review_count !== 1 ? 's' : ''})</span>
+                      </>
+                    ) : (
+                      <span style={{ color:'var(--text2)' }}>☆☆☆☆☆ Sin reseñas</span>
+                    )}
+                  </div>
+
                   <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'auto', paddingTop:'0.5rem' }}>
                     <div style={{ fontFamily:'var(--font-head)', fontSize:'1.5rem', color:'var(--teal)' }}>
                       Bs. {eq.precio_dia}
@@ -615,6 +721,13 @@ export default function DashboardArrendatario() {
                   </div>
                   {sol.mensaje && <p style={{ color:'var(--text2)', margin:0 }}><strong>Mensaje:</strong> {sol.mensaje}</p>}
 
+                  <button onClick={() => setChatSolicitud(sol)} style={{
+                    alignSelf:'flex-start', background:'rgba(45,212,191,0.1)',
+                    border:'1px solid rgba(45,212,191,0.3)', borderRadius:'8px',
+                    padding:'0.45rem 1rem', color:'var(--teal)', fontSize:'0.85rem',
+                    cursor:'pointer', fontWeight:600
+                  }}>💬 Abrir chat</button>
+
                   {/* ── CALIFICACIÓN ── */}
                   {sol.estado === 'devuelta' && (
                     <div style={{ borderTop:'1px solid var(--border)', paddingTop:'0.85rem', marginTop:'0.25rem' }}>
@@ -676,7 +789,78 @@ export default function DashboardArrendatario() {
         </div>
       )}
 
+      {/* ── HISTORIAL ── */}
+      {activeSection === 'historial' && (
+        <div style={{ display:'grid', gap:'1rem' }}>
+          <div>
+            <h2 style={{ fontSize:'1.4rem', margin:0 }}>Historial de alquileres</h2>
+            <p style={{ color:'var(--text2)', margin:'0.5rem 0 0' }}>Todos tus alquileres completados.</p>
+          </div>
+
+          {solicitudesLoading && <p style={{ color:'var(--text2)' }}>Cargando...</p>}
+
+          {(() => {
+            const historial = solicitudes.filter(s => s.estado === 'devuelta')
+            if (!solicitudesLoading && historial.length === 0) return (
+              <div style={{ background:'var(--bg2)', border:'1px solid var(--border)', borderRadius:'var(--radius)', padding:'3rem', textAlign:'center', color:'var(--text2)' }}>
+                <div style={{ fontSize:'3rem', marginBottom:'1rem' }}>📦</div>
+                <p>Aún no tienes alquileres completados.</p>
+              </div>
+            )
+            const totalGastado = historial.reduce((sum, s) => {
+              const dias = Math.max(1, Math.ceil((new Date(s.fecha_fin) - new Date(s.fecha_inicio)) / 86400000))
+              return sum + (s.equipo_precio * dias)
+            }, 0)
+            return (
+              <>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:'0.75rem' }}>
+                  {[
+                    { label:'Alquileres', value: historial.length },
+                    { label:'Total gastado', value: `Bs. ${totalGastado}` },
+                    { label:'Calificados', value: historial.filter(s => s.calificacion).length },
+                  ].map(c => (
+                    <div key={c.label} style={{ background:'var(--bg2)', border:'1px solid var(--border)', borderRadius:'16px', padding:'1rem', textAlign:'center' }}>
+                      <div style={{ fontSize:'0.72rem', color:'var(--text2)', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'0.35rem' }}>{c.label}</div>
+                      <div style={{ fontFamily:'var(--font-head)', fontSize:'1.6rem', color:'var(--teal)' }}>{c.value}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display:'grid', gap:'0.75rem' }}>
+                  {historial.map(sol => {
+                    const dias = Math.max(1, Math.ceil((new Date(sol.fecha_fin) - new Date(sol.fecha_inicio)) / 86400000))
+                    return (
+                      <div key={sol.id} style={{ background:'var(--bg2)', border:'1px solid var(--border)', borderRadius:'var(--radius)', padding:'1.25rem', display:'grid', gap:'0.75rem' }}>
+                        <div style={{ display:'flex', justifyContent:'space-between', flexWrap:'wrap', gap:'0.5rem' }}>
+                          <div>
+                            <div style={{ fontWeight:700 }}>{sol.equipo_titulo}</div>
+                            <div style={{ color:'var(--text2)', fontSize:'0.875rem' }}>{sol.equipo_categoria} · {sol.propietario_nombre}</div>
+                          </div>
+                          <div style={{ textAlign:'right' }}>
+                            <div style={{ fontFamily:'var(--font-head)', fontSize:'1.3rem', color:'var(--teal)' }}>Bs. {sol.equipo_precio * dias}</div>
+                            <div style={{ fontSize:'0.75rem', color:'var(--text2)' }}>{dias} día{dias !== 1 ? 's' : ''}</div>
+                          </div>
+                        </div>
+                        <div style={{ fontSize:'0.875rem', color:'var(--text2)' }}>
+                          {new Date(sol.fecha_inicio).toLocaleDateString()} → {new Date(sol.fecha_fin).toLocaleDateString()}
+                        </div>
+                        {sol.calificacion && (
+                          <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', fontSize:'0.875rem' }}>
+                            <span style={{ color:'#facc15' }}>{'★'.repeat(sol.calificacion)}{'☆'.repeat(5 - sol.calificacion)}</span>
+                            {sol.comentario_cal && <span style={{ color:'var(--text2)', fontStyle:'italic' }}>"{sol.comentario_cal}"</span>}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </>
+            )
+          })()}
+        </div>
+      )}
+
       {selectedEquipo && <EquipoDetalleModal equipo={selectedEquipo} onClose={() => { setSelectedEquipo(null); setRequestError(''); setRequestStatus('') }} onRequestSuccess={handleSolicitudCreada} />}
+      {chatSolicitud && <ChatModal solicitud={chatSolicitud} onClose={() => setChatSolicitud(null)} />}
     </DashboardShell>
   )
 }

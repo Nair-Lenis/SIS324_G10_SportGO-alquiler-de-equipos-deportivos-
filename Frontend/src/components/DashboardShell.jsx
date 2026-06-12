@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { mensajesAPI, solicitudesAPI } from '../api/client'
 
 const ROL_LABEL = { admin: 'Administrador', propietario: 'Propietario', arrendatario: 'Arrendatario' }
 const ROL_COLOR = { admin: 'var(--rust)', propietario: 'var(--teal)', arrendatario: 'var(--slate)' }
@@ -19,6 +20,7 @@ const ITEMS_BY_ROLE = {
   arrendatario: [
     { icon: '🔍', label: 'Explorar', section: 'explorar' },
     { icon: '📦', label: 'Mis Solicitudes', section: 'mis_solicitudes' },
+    { icon: '🗓️', label: 'Historial', section: 'historial' },
   ],
 }
 
@@ -32,6 +34,21 @@ export default function DashboardShell({ title, activeSection, onSectionChange =
     catch { return false }
   })
   const [isMobile, setIsMobile] = useState(window.innerWidth < MOBILE_BREAKPOINT)
+  const [notifCount, setNotifCount] = useState(0)
+  const lastCheckRef = useRef(localStorage.getItem('sportgo_last_check') || new Date(0).toISOString())
+
+  useEffect(() => {
+    if (!user?.id) return
+    async function checkNotifs() {
+      try {
+        const msgs = await mensajesAPI.novistos(user.id)
+        setNotifCount(msgs.total || 0)
+      } catch {}
+    }
+    checkNotifs()
+    const interval = setInterval(checkNotifs, 15000)
+    return () => clearInterval(interval)
+  }, [user?.id])
 
   useEffect(() => {
     const handler = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
@@ -121,6 +138,22 @@ export default function DashboardShell({ title, activeSection, onSectionChange =
             {badge && <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(16,185,129,0.12)', color: 'var(--teal)', padding: '0.4rem 0.75rem', borderRadius: '999px', fontSize: '0.85rem', fontWeight: 700 }}>{badge}</span>}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ position:'relative' }}>
+              <button onClick={() => onSectionChange(user?.rol === 'propietario' ? 'solicitudes' : 'mis_solicitudes')}
+                title="Mensajes nuevos"
+                style={{ background:'transparent', border:'1px solid var(--border)', borderRadius:'12px',
+                  padding:'0.5rem 0.75rem', cursor:'pointer', fontSize:'1.1rem', color:'var(--text)' }}>
+                💬
+              </button>
+              {notifCount > 0 && (
+                <span style={{ position:'absolute', top:'-6px', right:'-6px', background:'#ef4444',
+                  color:'#fff', borderRadius:'999px', fontSize:'0.65rem', fontWeight:700,
+                  minWidth:'18px', height:'18px', display:'flex', alignItems:'center',
+                  justifyContent:'center', padding:'0 4px' }}>
+                  {notifCount > 9 ? '9+' : notifCount}
+                </span>
+              )}
+            </div>
             <span style={{ fontSize: '0.9rem', color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{ROL_LABEL[user?.rol]}</span>
           </div>
         </header>

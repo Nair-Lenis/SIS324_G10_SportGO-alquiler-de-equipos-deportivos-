@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import DashboardShell from '../../components/DashboardShell'
+import ChatModal from '../../components/ChatModal'
 import MapLocationPicker from '../../components/MapLocationPicker'
 import { useAuth } from '../../context/AuthContext'
 import { equiposAPI, solicitudesAPI, usersAPI } from '../../api/client'
@@ -229,6 +230,7 @@ export default function DashboardPropietario() {
   const [loading, setLoading]         = useState(true)
   const [error, setError]             = useState('')
   const [modal, setModal]             = useState(null)
+  const [chatSolicitud, setChatSolicitud] = useState(null)
   const [activeSection, setActiveSection] = useState('equipos')
   const [profileStatus, setProfileStatus] = useState('')
   const [profileError, setProfileError]   = useState('')
@@ -334,6 +336,10 @@ export default function DashboardPropietario() {
     }
   }
 
+  const LIMITE_FREE = 3
+  const esPremium = profile?.plan === 'premium'
+  const limiteAlcanzado = !esPremium && equipos.length >= LIMITE_FREE
+
   const stats = [
     { label: 'Mis equipos',  value: equipos.length },
     { label: 'Aprobados',    value: equipos.filter(e => e.estado_val === 'aprobado').length },
@@ -383,11 +389,29 @@ export default function DashboardPropietario() {
       </div>
 
       <div style={{ marginBottom:'1.5rem' }}>
-        <div style={{ display:'flex', justifyContent:'flex-end', marginBottom:'1rem' }}>
-          <button onClick={() => setModal('new')} style={{ padding:'0.9rem 1.5rem', borderRadius:'12px', background:'var(--teal)', color:'#fff', border:'none', cursor:'pointer', fontWeight:700 }}>
-            + Publicar equipo
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1rem', flexWrap:'wrap', gap:'0.75rem' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:'0.75rem' }}>
+            {esPremium ? (
+              <span style={{ background:'rgba(250,204,21,0.15)', border:'1px solid rgba(250,204,21,0.4)', color:'#facc15', borderRadius:'999px', padding:'0.35rem 0.9rem', fontSize:'0.8rem', fontWeight:700 }}>
+                ⭐ Plan Premium — equipos ilimitados
+              </span>
+            ) : (
+              <span style={{ background:'rgba(112,128,144,0.15)', border:'1px solid var(--border)', color:'var(--text2)', borderRadius:'999px', padding:'0.35rem 0.9rem', fontSize:'0.8rem' }}>
+                Plan Gratuito: {equipos.length}/3 equipos
+              </span>
+            )}
+          </div>
+          <button
+            onClick={() => limiteAlcanzado ? alert('Has alcanzado el límite de 3 equipos del plan gratuito.\nContacta al administrador para activar el plan Premium.') : setModal('new')}
+            style={{ padding:'0.9rem 1.5rem', borderRadius:'12px', background: limiteAlcanzado ? 'rgba(112,128,144,0.3)' : 'var(--teal)', color: limiteAlcanzado ? 'var(--text2)' : '#fff', border:'none', cursor: limiteAlcanzado ? 'not-allowed' : 'pointer', fontWeight:700 }}>
+            {limiteAlcanzado ? '🔒 Límite alcanzado' : '+ Publicar equipo'}
           </button>
         </div>
+        {limiteAlcanzado && (
+          <div style={{ background:'rgba(250,204,21,0.08)', border:'1px solid rgba(250,204,21,0.3)', borderRadius:'12px', padding:'0.875rem 1rem', marginBottom:'1rem', fontSize:'0.875rem', color:'#facc15' }}>
+            ⚠️ Alcanzaste el límite de <strong>3 equipos gratuitos</strong>. Contacta al administrador para activar el <strong>Plan Premium</strong> y publicar equipos ilimitados.
+          </div>
+        )}
 
         <section>
           {error && <p style={{ color:'#f87171', marginBottom:'1rem' }}>{error}</p>}
@@ -522,6 +546,10 @@ export default function DashboardPropietario() {
                             Marcar como devuelta
                           </button>
                         )}
+                        <button onClick={() => setChatSolicitud(sol)}
+                          style={{ background:'transparent', border:'1px solid var(--border)', borderRadius:'8px', color:'var(--text)', padding:'0.75rem 1rem', cursor:'pointer' }}>
+                          💬 Chat
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -609,6 +637,7 @@ export default function DashboardPropietario() {
           onSaved={() => { setModal(null); cargarEquipos() }}
         />
       )}
+      {chatSolicitud && <ChatModal solicitud={chatSolicitud} onClose={() => setChatSolicitud(null)} />}
     </DashboardShell>
   )
 }

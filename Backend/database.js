@@ -48,6 +48,9 @@ if (!userCols.some(col => col.name === 'bio')) {
 if (!userCols.some(col => col.name === 'foto_perfil')) {
   db.exec('ALTER TABLE users ADD COLUMN foto_perfil TEXT');
 }
+if (!userCols.some(col => col.name === 'plan')) {
+  db.exec("ALTER TABLE users ADD COLUMN plan TEXT NOT NULL DEFAULT 'free'");
+}
 
 // ── Tabla equipos (Sprint 2) ──────────────────────────────────────────────────
 db.exec(`
@@ -103,6 +106,18 @@ if (solicitudCols.length === 0) {
     )
   `);
 }
+
+// ── Tabla mensajes (chat interno) ────────────────────────────────────────────
+db.exec(`
+  CREATE TABLE IF NOT EXISTS mensajes (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    solicitud_id    INTEGER NOT NULL REFERENCES solicitudes(id) ON DELETE CASCADE,
+    remitente_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    contenido       TEXT NOT NULL,
+    leido           INTEGER NOT NULL DEFAULT 0,
+    created_at      DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`);
 
 // ── Seed: usuarios demo ───────────────────────────────────────────────────────
 const countUsers = db.prepare('SELECT COUNT(*) as total FROM users').get();

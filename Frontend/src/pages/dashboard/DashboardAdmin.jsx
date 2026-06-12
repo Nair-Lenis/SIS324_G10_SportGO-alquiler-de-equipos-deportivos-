@@ -2,6 +2,11 @@ import { useState, useEffect } from 'react'
 import DashboardShell from '../../components/DashboardShell'
 import { usersAPI, equiposAPI } from '../../api/client'
 
+const PLAN_COLOR = {
+  premium: { bg:'rgba(250,204,21,0.15)', text:'#facc15' },
+  free:    { bg:'rgba(112,128,144,0.15)', text:'var(--text2)' },
+}
+
 const ROL_COLOR = {
   admin:        { bg:'rgba(210,105,30,0.15)',  text:'var(--rust)' },
   propietario:  { bg:'rgba(0,128,128,0.15)',   text:'var(--teal)' },
@@ -202,6 +207,16 @@ export default function DashboardAdmin() {
     catch (err) { alert(err.message) }
   }
 
+  async function handleCambiarPlan(u) {
+    const nuevoPlan = u.plan === 'premium' ? 'free' : 'premium'
+    const msg = nuevoPlan === 'premium'
+      ? `¿Activar Plan Premium para ${u.nombre}? Podrá publicar equipos ilimitados.`
+      : `¿Quitar Plan Premium a ${u.nombre}? Volverá al límite de 3 equipos.`
+    if (!confirm(msg)) return
+    try { await usersAPI.cambiarPlan(u.id, nuevoPlan); cargarUsuarios() }
+    catch (err) { alert(err.message) }
+  }
+
   async function handleEliminarEquipo(id, titulo) {
     if (!confirm(`¿Eliminar "${titulo}"?`)) return
     try   { await equiposAPI.eliminar(id); cargarEquipos() }
@@ -266,7 +281,7 @@ export default function DashboardAdmin() {
             <table style={{ width:'100%', borderCollapse:'collapse', fontSize:'0.9rem' }}>
               <thead>
                 <tr style={{ borderBottom:'1px solid var(--border)' }}>
-                  {['Nombre','Email','Teléfono','Rol','Estado','Acciones'].map(h => (
+                  {['Nombre','Email','Teléfono','Rol','Plan','Estado','Acciones'].map(h => (
                     <th key={h} style={{ textAlign:'left', padding:'0.6rem 0.75rem',
                       color:'var(--text2)', fontWeight:600, fontSize:'0.75rem',
                       textTransform:'uppercase', letterSpacing:'0.06em' }}>{h}</th>
@@ -280,11 +295,21 @@ export default function DashboardAdmin() {
                     <td style={{ padding:'0.75rem', color:'var(--text2)' }}>{u.email}</td>
                     <td style={{ padding:'0.75rem', color:'var(--text2)' }}>{u.telefono || '—'}</td>
                     <td style={{ padding:'0.75rem' }}><Badge text={u.rol} colorMap={ROL_COLOR} /></td>
-                    <td style={{ padding:'0.75rem' }}><Badge text={u.estado} colorMap={ESTADO_COLOR} /></td>
                     <td style={{ padding:'0.75rem' }}>
+                      <Badge text={u.plan || 'free'} colorMap={PLAN_COLOR} />
+                    </td>
+                    <td style={{ padding:'0.75rem' }}><Badge text={u.estado} colorMap={ESTADO_COLOR} /></td>
+                    <td style={{ padding:'0.75rem', display:'flex', gap:'0.4rem', flexWrap:'wrap' }}>
                       <button onClick={() => setModalUser(u)} style={{ background:'transparent',
                         border:'1px solid var(--border)', borderRadius:'6px', padding:'0.3rem 0.75rem',
-                        color:'var(--text2)', fontSize:'0.8rem', cursor:'pointer', marginRight:'0.5rem' }}>Editar</button>
+                        color:'var(--text2)', fontSize:'0.8rem', cursor:'pointer' }}>Editar</button>
+                      {u.rol === 'propietario' && (
+                        <button onClick={() => handleCambiarPlan(u)} style={{ background: u.plan === 'premium' ? 'rgba(250,204,21,0.15)' : 'rgba(250,204,21,0.08)',
+                          border:'1px solid rgba(250,204,21,0.4)', borderRadius:'6px', padding:'0.3rem 0.75rem',
+                          color:'#facc15', fontSize:'0.8rem', cursor:'pointer' }}>
+                          {u.plan === 'premium' ? '⭐ Quitar Premium' : '⭐ Dar Premium'}
+                        </button>
+                      )}
                       <button onClick={() => handleEliminarUser(u.id, u.nombre)} style={{ background:'transparent',
                         border:'1px solid rgba(220,50,50,0.3)', borderRadius:'6px', padding:'0.3rem 0.75rem',
                         color:'#f87171', fontSize:'0.8rem', cursor:'pointer' }}>Eliminar</button>
